@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">AstonRickAndMorty</string>
+    <string name="title_personages">Personages</string>
+    <string name="title_episodes">Episodes</string>
+    <string name="title_locations">Locations</string>
+    <string name="search">search..</string>
+    <string name="error_message_noting_found">"Nothing found. relaunch data."</string>
+    <string name="error_fragment_havent_proper_arguments">"something are loss, can\'t show some"</string>
+    <string name="message_internet_trouble">"connection lost"</string>
+    <string name="message_error_something_wrong">"looks like something wrong"</string>
+    <string name="personage_avatar">personage_avatar</string>
+    <string name="item_personages_avatar">item personages avatar</string>
+    <string name="bottom_sheet_filter">filter</string>
+    <string name="message_refreshing">refreshing..</string>
+    <string name="message_noting_found">"we haven\'t find any.. this time"</string>
+    <string name="text_field_stub_fragment">Under Construction</string>
+    <string name="button_of_episode">button_of_episode</string>
+    <string name="button_of_personage">button_of_personage</string>
+    <string name="button_of_locations">button_of_locations</string>
+    <string name="button_okay_got_it_retry">okay, got it, retry!</string>
+    <string name="button_next_time">next time :(</string>
+    <string name="message_baddest_result">we haven\'t any result for you now, sorry</string>
+    <string name="message_nothing_found">Nothing found here, sorry</string>
+</resources>

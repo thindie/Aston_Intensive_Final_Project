@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/fragment_stub"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/image_under_construction"
+        android:layout_width="100dp"
+        android:paddingTop="20dp"
+        android:layout_gravity="center|center_vertical"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:src="@drawable/stub_under_construction"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:height="0dp"
+        android:layout_weight="0.6"
+        android:padding="30dp"
+        android:textAlignment="center"
+        android:layout_gravity="center|top"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:text="@string/text_field_stub_fragment"
+
+        android:layout_height="20dp"/>
+</LinearLayout>

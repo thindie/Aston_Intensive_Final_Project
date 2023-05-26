@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_grid_personages_child"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/item_grid_personages_name_child"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".1" />
+
+    <TextView
+        android:id="@+id/item_grid_personages_species_child"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".05" />
+
+    <TextView
+        android:id="@+id/item_grid_personages_status_child"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".05" />
+
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black" />
+
+    <!--<ImageView
+        android:id="@+id/item_grid_personages_image_child"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight=".9"
+        android:contentDescription="@string/item_personages_avatar" />
+
+    <TextView
+        android:id="@+id/item_grid_personages_gender_child"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".1"
+        />-->
+
+</LinearLayout>

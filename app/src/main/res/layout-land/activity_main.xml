@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="20dp"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/activity_back_press_image_view"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/arrow_left_circle"
+        app:layout_constraintBottom_toTopOf="@+id/activity_fragment_container"
+        app:layout_constraintEnd_toStartOf="@+id/search_bar_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+         />
+
+    <ImageView
+        android:id="@+id/activity_filter_image_view"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/filter_menu_outline"
+        app:layout_constraintBottom_toTopOf="@+id/activity_fragment_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/search_bar_layout"
+        app:layout_constraintTop_toTopOf="parent"
+         />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/activity_fragment_container"
+        android:name="com.example.thindie.astonrickandmorty.ui.personage.PersonagesFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/nav_bar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_bar_layout"
+        tools:layout="@layout/fragment_personages" />
+
+    <LinearLayout
+        android:id="@+id/nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activity_fragment_container">
+
+        <ImageButton
+            android:id="@+id/navigation_episodes"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:contentDescription="@string/message_noting_found"
+            android:src="@drawable/button_episodes_logo"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <ImageButton
+            android:id="@+id/navigation_personages"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:contentDescription="@string/item_personages_avatar"
+            android:src="@drawable/button_application_logo" />
+
+        <ImageButton
+            android:id="@+id/navigation_locations"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:contentDescription="@string/message_internet_trouble"
+            android:src="@drawable/button_locations_logo" />
+
+    </LinearLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/search_bar_layout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@id/activity_fragment_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:hint="@string/search" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
