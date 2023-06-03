@@ -1,9 +1,10 @@
-package com.example.thindie.astonrickandmorty
+package com.example.thindie.astonrickandmorty.application
 
 import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.addCallback
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -19,7 +20,7 @@ import androidx.fragment.app.Fragment
  *  in Activity:
  *
  *  override val router: Router by lazy {
- *         Router.inject(
+ *         Router.getInstance(
  *             contactRouter = this@AppCompatActivity,
  *             id = R.id.<activity_fragment_container>,
  *             startDestination = 'Fragment' ) }
@@ -31,8 +32,9 @@ import androidx.fragment.app.Fragment
  *     registerActivityLifecycleCallbacks(Router.Companion.ActivityLifeCycleGetter())
  *  }
  *
- *
- *
+ *  in Fragment:
+ *  onStarted State:
+ *  dispatchBackPress()
  *
  */
 
@@ -40,6 +42,7 @@ interface FragmentsRouter {
     val router: Router
 }
 
+//todo fix multiply navigation presses
 class Router private constructor(
     appCompatActivity: AppCompatActivity?,
     @IdRes private val container: Int,
@@ -61,8 +64,35 @@ class Router private constructor(
     }
 
     private fun onInit() {
-        if (currentDestination == null) navigateStartDestination()
-        else restoreExistingAtConfigurationChange()
+        if (destinations.isEmpty()) {
+            destinations += startDestination
+            navigateStartDestination()
+        } else restoreExistingAtConfigurationChange()
+    }
+
+    fun dispatchBackPress() {
+        appCompatActivity.onBackPressedDispatcher.addCallback(enabled = true) {
+            onBackPress()
+        }
+    }
+
+    private fun onBackPress() {
+        if (destinations.size > 1) {
+            destinations.removeLast()
+            backPressNavigation()
+        } else appCompatActivity.finish()
+    }
+
+    private fun backPressNavigation() {
+        appCompatActivity.supportFragmentManager
+            .beginTransaction()
+            .replace(
+                container,
+                appCompatActivity
+                    .supportFragmentManager
+                    .findFragmentByTag(destinations.last())
+                    ?: startScreen
+            ).commit()
     }
 
     private fun navigateStartDestination() {
@@ -71,20 +101,20 @@ class Router private constructor(
             .replace(
                 container,
                 startScreen,
-                currentDestination
-            )
+                destinations.last()
+            ).addToBackStack(destinations.last())
             .commit()
     }
 
     private fun navigateExisting(fragment: Fragment) {
-        currentDestination = fragment::class.java.name
+        destinations += fragment::class.java.name
         appCompatActivity.supportFragmentManager
             .beginTransaction()
             .replace(
                 container,
                 appCompatActivity
                     .supportFragmentManager
-                    .findFragmentByTag(currentDestination)
+                    .findFragmentByTag(destinations.last())
                     ?: startScreen
             ).commit()
     }
@@ -96,33 +126,37 @@ class Router private constructor(
                 container,
                 appCompatActivity
                     .supportFragmentManager
-                    .findFragmentByTag(currentDestination)
+                    .findFragmentByTag(destinations.last())
                     ?: startScreen
             ).commit()
     }
 
     private fun navigateFragmentAtFirstTime(fragment: Fragment) {
-        currentDestination = fragment::class.java.name
+        destinations += (fragment::class.java.name)
         appCompatActivity
             .supportFragmentManager.beginTransaction()
             .replace(
                 container,
                 fragment,
-                currentDestination
+                destinations.last()
             )
-            .also { if (currentDestination != startDestination) it.addToBackStack(currentDestination) }
+            .addToBackStack(destinations.last())
             .commit()
     }
 
     companion object {
-        private var currentDestination: String? = null
+        private val destinations: MutableList<String> = mutableListOf()
         private val DESTINATION = Router::class.java.simpleName
 
         class ActivityLifeCycleGetter : ActivityLifecycleCallbacks {
             private val tag = this::class.java.simpleName
             override fun onActivityCreated(p0: Activity, p1: Bundle?) {
                 Log.i(tag, "${CallbackState.CREATED} ${p1?.getString(DESTINATION).toString()}")
-                currentDestination = p1?.getString(DESTINATION)
+                p1?.getString(DESTINATION).also {
+                    if (it != null) {
+                        destinations += it
+                    }
+                }
             }
 
             override fun onActivityStarted(p0: Activity) {
@@ -139,11 +173,10 @@ class Router private constructor(
 
             override fun onActivityStopped(p0: Activity) {
                 Log.i(tag, "$tag ${CallbackState.STOPPED}")
-                currentDestination
             }
 
             override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {
-                p1.putString(DESTINATION, currentDestination)
+                p1.putString(DESTINATION, destinations.last())
             }
 
             override fun onActivityDestroyed(p0: Activity) {
@@ -156,7 +189,7 @@ class Router private constructor(
 
         }
 
-        fun inject(
+        fun getInstance(
             contactRouter: FragmentsRouter,
             id: Int,
             startDestination: Fragment,

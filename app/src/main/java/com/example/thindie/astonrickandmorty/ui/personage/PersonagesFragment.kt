@@ -5,25 +5,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonagesBinding
-import com.example.thindie.astonrickandmorty.ui.searchBar.SearchBarControl
-import com.example.thindie.astonrickandmorty.ui.searchBar.SearchBarEngine
-import com.example.thindie.astonrickandmorty.ui.searchBar.SearchBarProducer
+import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
+import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
 
-class PersonagesFragment : Fragment(), SearchBarControl {
+class PersonagesFragment : BaseFragment() {
 
     private var _binding: FragmentPersonagesBinding? = null
     private val binding get() = _binding!!
-    private val personagesViewModel: PersonagesViewModel by viewModels()
-    override lateinit var producer: SearchBarEngine
-    override val consumer: SearchBarEngine = personagesViewModel
+
+    private var viewModel: PersonagesViewModel? = null
 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        SearchBarProducer.inject(this)
+        if (viewModel == null) viewModel =
+            ViewModelProvider(this)[PersonagesViewModel::class.java]
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fragmentsRouter.router.dispatchBackPress()
+        searchEngine.observeSearchCriteria()
     }
 
     override fun onCreateView(
@@ -39,4 +45,13 @@ class PersonagesFragment : Fragment(), SearchBarControl {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun getSearchingConsumer(): SearchEngineResultConsumer {
+        return approve(viewModel, this)
+    }
+
+    override fun getSearchAbleList(): List<SearchAble> {
+        return emptyList() //todo
+    }
+
 }
