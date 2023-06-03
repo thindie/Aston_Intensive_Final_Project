@@ -1,30 +1,69 @@
 package com.example.thindie.astonrickandmorty.ui.episodes
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
+import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentEpisodesBinding
-import com.example.thindie.astonrickandmorty.ui.searchBar.SearchBarControl
-import com.example.thindie.astonrickandmorty.ui.searchBar.SearchBarEngine
-import com.example.thindie.astonrickandmorty.ui.searchBar.SearchBarProducer
+import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
+import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesRecyclerView
+import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
 
 
-class EpisodesFragment : Fragment(), SearchBarControl {
+class EpisodesFragment : BaseFragment(), UsesRecyclerView {
+
+    private lateinit var adapter: RecyclerViewAdapter<EpisodesUiModel, UiHolder>
 
     private var _binding: FragmentEpisodesBinding? = null
     private val binding get() = _binding!!
-    private val episodesViewModel: EpisodesViewModel by viewModels()
-    override lateinit var producer: SearchBarEngine
-    override val consumer: SearchBarEngine = episodesViewModel
+
+    private val viewModel: EpisodesViewModel by lazy { getVM(this) }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fragmentsRouter.router.dispatchBackPress()
+        searchEngine.observeSearchCriteria()
+        setRecyclerView()
+        observeRecyclerView()
+        viewModel.onClickedNavigationButton()
+
+    }
+
+    override fun getHolderIdSupplier(): ViewHolderIdSupplier {
+        return ViewHolderIdSupplier(
+            viewHolderLayout = R.layout.item_grid_personages,
+            majorChild = R.id.item_grid_personages_name,
+            titleChild = R.id.item_grid_personages_status,
+            lesserChild = R.id.item_grid_personages_species,
+            expandedChild = R.id.item_grid_personages_gender,
+            imageChild = R.id.item_grid_personages_image
+        )
+    }
+
+    override fun setRecyclerView() {
+        val recyclerView: RecyclerView = binding.recyclerViewGridParent.recyclerViewGrid
+        adapter = RecyclerViewAdapter(getHolderIdSupplier())
+        recyclerView.adapter = adapter
+    }
 
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        SearchBarProducer.inject(this)
+    override fun observeRecyclerView() {
+        viewModel.viewState.observe(viewLifecycleOwner) { UiState ->
+            when (UiState) {
+                is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
+                    adapter.submitList(UiState.list.map { it.toUiEntity() })
+                }
+                else -> {}
+            }
+        }
     }
 
     override fun onCreateView(
@@ -39,6 +78,14 @@ class EpisodesFragment : Fragment(), SearchBarControl {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun getSearchingConsumer(): SearchEngineResultConsumer {
+        return viewModel
+    }
+
+    override fun getSearchAbleList(): List<SearchAble> {
+        return emptyList() //todo(
     }
 
 }

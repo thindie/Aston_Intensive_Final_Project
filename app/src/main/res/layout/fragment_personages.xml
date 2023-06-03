@@ -4,7 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_personages"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="80dp"
+    android:paddingBottom="80dp">
 
-
+    <include
+        android:id="@+id/recycler_view_grid_parent"
+        layout="@layout/recycler_view_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_grid_personages" />
 </androidx.constraintlayout.widget.ConstraintLayout>

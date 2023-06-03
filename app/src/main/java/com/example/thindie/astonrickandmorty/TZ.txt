@@ -1,0 +1,37 @@
+TODO
+
+- cache
+- search and filtration without connection
+- all screens except main have to contain Back button
+- search and filtration  -  all results are interactive
+- pull to refresh
+- loading with progress
+
+- splash screen
+- MAIN SCREEN:
+
+        bottom nav personages locations episodes
+
+        personage screen: name species status gender image
+        episode screen: name episode airDate
+        locations screen: name type dimension
+
+        - filtering personages:
+        name
+        status (status dead alive unknown)
+        species
+        type
+        gender ( female male genderless unknown )
+
+        - filtering locations:
+        name
+        type
+        dimension
+
+        -filtering episode:
+        name
+        episode (episode code)
+
+
+
+
