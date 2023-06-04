@@ -13,6 +13,7 @@ import com.example.thindie.astonrickandmorty.application.Router
 import com.example.thindie.astonrickandmorty.data.DataLayerDependencyProvider
 import com.example.thindie.astonrickandmorty.domain.BaseRepository
 import com.example.thindie.astonrickandmorty.domain.locations.LocationDomain
+import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
 import com.example.thindie.astonrickandmorty.ui.di.ActivityComponent
 import com.example.thindie.astonrickandmorty.ui.episodes.EpisodesFragment
 import com.example.thindie.astonrickandmorty.ui.locations.LocationsFragment
@@ -30,6 +31,9 @@ class MainActivity : AppCompatActivity(), FragmentsRouter, SearchEngineManager {
     @Inject
     lateinit var repository: BaseRepository<LocationDomain>
 
+    @Inject
+    lateinit var personageRepository: BaseRepository<PersonageDomain>
+
 
     override val router: Router by lazy {
         Router.getInstance(this, R.id.activity_fragment_container, EpisodesFragment())
@@ -45,14 +49,7 @@ class MainActivity : AppCompatActivity(), FragmentsRouter, SearchEngineManager {
         setContentView(R.layout.activity_main)
         observeBottomNavigation()
         router.navigate()
-        lifecycleScope.launch {
-            repository.getAll().onSuccess {
-                Log.d("SERVICE_TAG", it.toString())
-            }
-                .onFailure {
-                    Log.d("SERVICE_TAG", it.message.toString())
-                }
-        }
+
 
 
     }
