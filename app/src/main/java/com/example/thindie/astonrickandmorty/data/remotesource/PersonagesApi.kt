@@ -14,8 +14,6 @@ interface PersonagesApi {
     @GET(ApiParams.CHARACTER)
     suspend fun getAllCharacters(): Response<PersonageRaw>
 
-    @GET
-    suspend fun getAllCharacterWithPage(@Url urlWithPage: String)
 
     @GET(ApiParams.CHARACTER_ID)
     suspend fun getSingleCharacter(

@@ -16,8 +16,6 @@ interface LocationApi {
     @GET(ApiParams.LOCATION)
     suspend fun getAllLocations(): Response<LocationRaw>
 
-    @GET
-    suspend fun getAllCharacterWithPage(@Url urlWithPage: String): JsonObject
 
     @GET(ApiParams.LOCATION_ID)
     suspend fun getSingleLocation(

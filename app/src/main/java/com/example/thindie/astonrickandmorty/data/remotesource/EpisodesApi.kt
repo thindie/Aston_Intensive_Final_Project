@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.data.remotesource
 
+import com.example.thindie.astonrickandmorty.data.remotesource.entity.episode.EpisodesDto
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.episode.EpisodesRaw
 import com.example.thindie.astonrickandmorty.data.remotesource.util.ApiParams
 import retrofit2.Response
@@ -16,7 +17,7 @@ interface EpisodesApi {
     @GET(ApiParams.EPISODE_ID)
     suspend fun getSingleEpisode(
         @Path("id") episodeId: Int
-    ): Response<com.example.thindie.astonrickandmorty.data.remotesource.entity.episode.Result>
+    ): Response<EpisodesDto>
 /*
     @Suppress("LongParameterList")
     @GET(ApiParams.EPISODE)

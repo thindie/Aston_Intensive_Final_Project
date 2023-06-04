@@ -5,5 +5,4 @@ object DataBaseUtil {
     const val personages = "personages"
     const val locations = "locations"
     const val dbName = "rickMortyDb"
-    const val listSeparator = "l1ieztScepartaouer"
 }

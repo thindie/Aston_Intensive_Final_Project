@@ -1,9 +1,11 @@
 package com.example.thindie.astonrickandmorty.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.application.FragmentsRouter
 import com.example.thindie.astonrickandmorty.application.InjectController
@@ -18,6 +20,7 @@ import com.example.thindie.astonrickandmorty.ui.personage.PersonagesFragment
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineManager
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchObservable
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), FragmentsRouter, SearchEngineManager {
     private var searchObservable: SearchObservable? = null
@@ -42,7 +45,14 @@ class MainActivity : AppCompatActivity(), FragmentsRouter, SearchEngineManager {
         setContentView(R.layout.activity_main)
         observeBottomNavigation()
         router.navigate()
-        repository.toString()
+        lifecycleScope.launch {
+            repository.getAll().onSuccess {
+                Log.d("SERVICE_TAG", it.toString())
+            }
+                .onFailure {
+                    Log.d("SERVICE_TAG", it.message.toString())
+                }
+        }
 
 
     }

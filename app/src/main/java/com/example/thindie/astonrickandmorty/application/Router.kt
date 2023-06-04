@@ -9,34 +9,7 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 
-/**
- *  Implement [FragmentsRouter] by actual activity,
- *  make
- *  registration
- *  [Router.Companion.ActivityLifeCycleGetter]
- *  in application's class 'onCreate()'
- *
- *
- *  in Activity:
- *
- *  override val router: Router by lazy {
- *         Router.getInstance(
- *             contactRouter = this@AppCompatActivity,
- *             id = R.id.<activity_fragment_container>,
- *             startDestination = 'Fragment' ) }
- *
- *  in Application:
- *
- *  override fun onCreate() {
- *     super.onCreate()
- *     registerActivityLifecycleCallbacks(Router.Companion.ActivityLifeCycleGetter())
- *  }
- *
- *  in Fragment:
- *  onStarted State:
- *  dispatchBackPress()
- *
- */
+
 
 interface FragmentsRouter {
     val router: Router

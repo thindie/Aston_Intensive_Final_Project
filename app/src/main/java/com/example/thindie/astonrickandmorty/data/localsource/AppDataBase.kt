@@ -15,6 +15,5 @@ import com.example.thindie.astonrickandmorty.data.localsource.entity.PersonageDb
 abstract class AppDataBase : RoomDatabase() {
     abstract fun getEpisodesDao(): EpisodesDao
     abstract fun getLocationsDao(): LocationsDao
-
     abstract fun getPersonagesDao(): PersonagesDao
 }
