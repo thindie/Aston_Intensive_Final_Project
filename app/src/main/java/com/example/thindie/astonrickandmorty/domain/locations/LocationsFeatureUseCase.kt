@@ -2,7 +2,8 @@ package com.example.thindie.astonrickandmorty.domain.locations
 
 import com.example.thindie.astonrickandmorty.domain.CompositionUseCase
 import com.example.thindie.astonrickandmorty.domain.UseCase
-import com.example.thindie.astonrickandmorty.domain.filtering.CharacterFilter
+import com.example.thindie.astonrickandmorty.domain.filtering.Filter
+import com.example.thindie.astonrickandmorty.domain.filtering.LocationsFilter
 import javax.inject.Inject
 
 class LocationsFeatureUseCase @Inject constructor(private val baseRepository: LocationRepository) :
@@ -17,9 +18,9 @@ class LocationsFeatureUseCase @Inject constructor(private val baseRepository: Lo
         return useCase.getConcrete(id)
     }
 
-    override suspend fun getAll(filter: CharacterFilter): Result<List<LocationDomain>> {
-        //todo()
-        return useCase.getAll()
+    override suspend fun getAll(filter: Filter<LocationDomain, LocationsFilter>): Result<List<LocationDomain>> {
+        return if (filter.isDefault) useCase.getAll()
+        else useCase.onSpecifiedFilter(filter) { useCase.getAll() }
     }
 
     override fun resetFilter() {

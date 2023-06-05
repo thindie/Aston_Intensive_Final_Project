@@ -5,14 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.thindie.astonrickandmorty.domain.BaseProvider
+import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel<T> : ViewModel() {
+abstract class BaseViewModel<Domain, Filters> : ViewModel() {
 
-    abstract fun SearchAble.transform(): T
+    abstract fun applyFilter(): Filter<Domain, Filters>
+    abstract fun SearchAble.transform(): Domain
 
-    abstract val provider: BaseProvider<T>
+    abstract val provider: BaseProvider<Domain, Filters>
 
     private val _observable: MutableLiveData<UiState> = MutableLiveData()
 
@@ -20,7 +22,7 @@ abstract class BaseViewModel<T> : ViewModel() {
         get() = _observable
 
     fun fetchAll() {
-        fetchSome { provider.getAll() }
+        fetchSome { provider.getAll(filter = applyFilter()) }
     }
 
 
@@ -44,7 +46,7 @@ abstract class BaseViewModel<T> : ViewModel() {
     }
 
 
-    private fun Result<List<T>>.onFetch() {
+    private fun Result<List<Domain>>.onFetch() {
         onSuccess { fetched ->
             _observable.value = UiState.SuccessFetchResult(fetched)
         }.onFailure { failed ->
@@ -52,7 +54,7 @@ abstract class BaseViewModel<T> : ViewModel() {
         }
     }
 
-    private fun fetchSome(foo: suspend () -> Result<List<T>>) {
+    private fun fetchSome(foo: suspend () -> Result<List<Domain>>) {
         viewModelScope.launch {
             foo().onFetch()
         }
@@ -60,11 +62,11 @@ abstract class BaseViewModel<T> : ViewModel() {
 
 
     sealed class UiState {
-        data class SuccessFetchResult<T>(
-            val list: List<T>
+        data class SuccessFetchResult<Domain>(
+            val list: List<Domain>
         ) : UiState()
 
-        data class SuccessFetchResultConcrete<T>(val t: T) : UiState()
+        data class SuccessFetchResultConcrete<Domain>(val t: Domain) : UiState()
 
         data class BadResult(val error: Throwable) : UiState()
     }

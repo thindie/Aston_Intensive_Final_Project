@@ -11,7 +11,7 @@ data class LocationDbModel(
     @PrimaryKey
     val id: Int,
     val name: String,
-    val residentsList: String, //todo
+    val residentsList: String,
     val type: String,
     val url: String
 )

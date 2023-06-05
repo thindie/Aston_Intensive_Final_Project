@@ -7,7 +7,7 @@ import com.example.thindie.astonrickandmorty.data.localsource.DataBaseUtil
 @Entity(tableName = DataBaseUtil.episodes)
 data class EpisodeDbModel(
     val airDate: String,
-    val charactersList: String, //todo
+    val charactersList: String,
     val created: String,
     val episode: String,
     @PrimaryKey

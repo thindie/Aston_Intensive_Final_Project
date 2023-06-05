@@ -1,9 +1,11 @@
 package com.example.thindie.astonrickandmorty.domain
 
-class CompositionUseCase<T>(private val baseRepository: BaseRepository<T>) {
+import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 
-    suspend fun getConcrete(id: Int): Result<T> {
-        var result: Result<T>? = null
+class CompositionUseCase<Domain> private constructor(private val baseRepository: BaseRepository<Domain>) {
+
+    suspend fun getConcrete(id: Int): Result<Domain> {
+        var result: Result<Domain>? = null
         baseRepository
             .getConcrete(id)
             .onFailure {
@@ -15,8 +17,8 @@ class CompositionUseCase<T>(private val baseRepository: BaseRepository<T>) {
     }
 
 
-    suspend fun getAll(): Result<List<T>> {
-        val list = mutableListOf<T>()
+    suspend fun getAll(): Result<List<Domain>> {
+        val list = mutableListOf<Domain>()
         return baseRepository
             .getAll()
             .onSuccess { list.addAll(it); Result.success(list) }
@@ -26,13 +28,13 @@ class CompositionUseCase<T>(private val baseRepository: BaseRepository<T>) {
                         .onSuccess { list.addAll(it) }
                     Result.success(list)
                 } catch (onReTake: Exception) {
-                    Result.failure<T>(onReTake)
+                    Result.failure<Domain>(onReTake)
                 }
             }
     }
 
 
-    private suspend fun reTake(id: Int): Result<T> {
+    private suspend fun reTake(id: Int): Result<Domain> {
         return try {
             val reTaken = baseRepository.retakeConcrete(id)
             requireNotNull(reTaken)
@@ -42,18 +44,39 @@ class CompositionUseCase<T>(private val baseRepository: BaseRepository<T>) {
         }
     }
 
-    private suspend fun reTakeAll(): Result<List<T>> {
+    private suspend fun reTakeAll(): Result<List<Domain>> {
         val result = baseRepository.retakeAll()
-        if (result.isEmpty()) error() { "looks last chance re-take some data is failed" }
+        if (result.isEmpty()) error { "looks like last chance re-take some data is failed" }
         return Result.success(result)
     }
 
+    suspend fun <F> onSpecifiedFilter(
+        someFilter: Filter<Domain, F>,
+        foo: suspend () -> Result<List<Domain>>
+    )
+            : Result<List<Domain>> {
+        return foo
+            .invoke()
+            .mapCatching { entityList ->
+                someFilter
+                    .detectActualFilteringCases()
+                someFilter.filter(entityList)
+            }
+    }
+
+
     companion object {
-        fun <T> inject(
-            baseProvider: BaseProvider<T>,
-            baseRepository: BaseRepository<T>
+      internal  fun <Domain> inject(
+            baseProvider: UseCase<Domain>,
+            baseRepository: BaseRepository<Domain>
         ) {
             baseProvider.useCase = CompositionUseCase(baseRepository)
         }
     }
+}
+
+fun String.matchCriteria(criteria: String): Boolean {
+    return lowercase().trim().contains(criteria.lowercase().trim()) ||
+            lowercase().trim() == criteria.lowercase().trim() ||
+            criteria.lowercase().trim().contains(this.lowercase().trim())
 }

@@ -1,5 +1,5 @@
 package com.example.thindie.astonrickandmorty.domain
 
-interface UseCase<T>{
+internal interface UseCase<T>{
     var useCase: CompositionUseCase<T>
 }

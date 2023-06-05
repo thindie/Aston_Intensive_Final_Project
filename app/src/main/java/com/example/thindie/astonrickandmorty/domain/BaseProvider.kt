@@ -1,13 +1,13 @@
 package com.example.thindie.astonrickandmorty.domain
 
-import com.example.thindie.astonrickandmorty.domain.filtering.CharacterFilter
+import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 
-interface BaseProvider<T> {
+interface BaseProvider<Domain, Filters> {
 
 
-    suspend fun getConcrete(id: Int): Result<T>
+    suspend fun getConcrete(id: Int): Result<Domain>
 
-    suspend fun getAll(filter: CharacterFilter = CharacterFilter()): Result<List<T>>
+    suspend fun getAll(filter: Filter<Domain, Filters>): Result<List<Domain>>
 
     fun resetFilter()
 }
