@@ -9,12 +9,12 @@ import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel<Domain, Filters> : ViewModel() {
+abstract class BaseViewModel<Domain, Filters>(private val provider: BaseProvider<Domain, Filters>) :
+    ViewModel() {
 
     abstract fun applyFilter(): Filter<Domain, Filters>
     abstract fun SearchAble.transform(): Domain
 
-    abstract val provider: BaseProvider<Domain, Filters>
 
     private val _observable: MutableLiveData<UiState> = MutableLiveData()
 

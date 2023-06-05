@@ -1,16 +1,19 @@
 package com.example.thindie.astonrickandmorty.ui.episodes
 
-import com.example.thindie.astonrickandmorty.domain.BaseProvider
 import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeDomain
+import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeProvider
 import com.example.thindie.astonrickandmorty.domain.filtering.EpisodeFilter
 import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 import com.example.thindie.astonrickandmorty.ui.basis.BaseViewModel
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
+import javax.inject.Inject
 
-class EpisodesViewModel : BaseViewModel<EpisodeDomain, EpisodeFilter>(), SearchEngineResultConsumer {
-    override val provider: BaseProvider<EpisodeDomain, EpisodeFilter>
-        get() = TODO("Not yet implemented")
+class EpisodesViewModel @Inject constructor(private val provider: EpisodeProvider) :
+    BaseViewModel<EpisodeDomain, EpisodeFilter>(
+        provider
+    ), SearchEngineResultConsumer {
+
 
     override fun applyFilter(): Filter<EpisodeDomain, EpisodeFilter> {
         return EpisodeFilter()

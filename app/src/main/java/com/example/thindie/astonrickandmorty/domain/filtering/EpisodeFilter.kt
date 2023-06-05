@@ -28,7 +28,7 @@ data class EpisodeFilter(
                     resultList.map { it.name.matchCriteria(name) }
                 }
                 2 -> {
-                    resultList.map { it.episode.matchCriteria(episode.toString()) }
+                    resultList.map { it.episode.matchCriteria(episode) }
                 }
             }
         }

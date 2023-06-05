@@ -1,17 +1,19 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
-import com.example.thindie.astonrickandmorty.domain.BaseProvider
+import androidx.lifecycle.ViewModel
 import com.example.thindie.astonrickandmorty.domain.filtering.CharacterFilter
 import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
+import com.example.thindie.astonrickandmorty.domain.personages.PersonageProvider
 import com.example.thindie.astonrickandmorty.ui.basis.BaseViewModel
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
+import javax.inject.Inject
 
-class PersonagesViewModel : BaseViewModel<PersonageDomain, CharacterFilter>(),
+class PersonagesViewModel @Inject constructor ( val personageProvider: PersonageProvider ) :
+    BaseViewModel<PersonageDomain, CharacterFilter>(personageProvider),
     SearchEngineResultConsumer {
-    override val provider: BaseProvider<PersonageDomain, CharacterFilter>
-        get() = TODO("Not yet implemented")
+
 
     override fun applyFilter(): Filter<PersonageDomain, CharacterFilter> {
         return CharacterFilter()

@@ -2,12 +2,14 @@ package com.example.thindie.astonrickandmorty.ui.personage
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonagesBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
+import com.example.thindie.astonrickandmorty.ui.basis.BaseViewModel
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
 
@@ -16,13 +18,11 @@ class PersonagesFragment : BaseFragment() {
     private var _binding: FragmentPersonagesBinding? = null
     private val binding get() = _binding!!
 
-    private var viewModel: PersonagesViewModel? = null
+   private val viewModel: PersonagesViewModel by lazy { ViewModelProvider(this)[PersonagesViewModel::class.java] }
 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (viewModel == null) viewModel =
-            ViewModelProvider(this)[PersonagesViewModel::class.java]
 
     }
 
@@ -30,7 +30,16 @@ class PersonagesFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         fragmentsRouter.router.dispatchBackPress()
         searchEngine.observeSearchCriteria()
-    }
+        /*viewModel.fetchAll()
+        viewModel.observable.observe(viewLifecycleOwner) {
+            when (it) {
+                is BaseViewModel.UiState.SuccessFetchResult<*> -> {
+                    Log.d("SERVICE", it.list.toString())
+                }
+                else -> {}
+            }*/
+        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +56,7 @@ class PersonagesFragment : BaseFragment() {
     }
 
     override fun getSearchingConsumer(): SearchEngineResultConsumer {
-        return approve(viewModel, this)
+        error("")
     }
 
     override fun getSearchAbleList(): List<SearchAble> {

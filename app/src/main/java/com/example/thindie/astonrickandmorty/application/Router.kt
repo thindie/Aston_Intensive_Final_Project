@@ -10,19 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 
 
-
 interface FragmentsRouter {
     val router: Router
 }
 
 //todo fix multiply navigation presses
 class Router private constructor(
-    appCompatActivity: AppCompatActivity?,
+    private val appCompatActivity: AppCompatActivity,
     @IdRes private val container: Int,
     private val startScreen: Fragment,
-) {
-    private val appCompatActivity = requireNotNull(appCompatActivity) { "Activity not init " }
     private val startDestination: String = startScreen::class.java.name
+) {
+
 
     fun navigate(fragment: Fragment? = null) {
         if (fragment == null) onInit()
@@ -52,11 +51,11 @@ class Router private constructor(
     private fun onBackPress() {
         if (destinations.size > 1) {
             destinations.removeLast()
-            backPressNavigation()
+            navigateAfterLastInStackRemoved()
         } else appCompatActivity.finish()
     }
 
-    private fun backPressNavigation() {
+    private fun navigateAfterLastInStackRemoved() {
         appCompatActivity.supportFragmentManager
             .beginTransaction()
             .replace(
@@ -168,7 +167,10 @@ class Router private constructor(
             startDestination: Fragment,
         ): Router {
             return Router(
-                contactRouter as? AppCompatActivity,
+                requireNotNull(contactRouter as? AppCompatActivity) {
+                    " wrong Router implementation given." +
+                            "check it is AppCompatActivity "
+                },
                 id,
                 startDestination
             )

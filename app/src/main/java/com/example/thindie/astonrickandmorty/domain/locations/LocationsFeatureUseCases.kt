@@ -6,7 +6,7 @@ import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 import com.example.thindie.astonrickandmorty.domain.filtering.LocationsFilter
 import javax.inject.Inject
 
-class LocationsFeatureUseCase @Inject constructor(private val baseRepository: LocationRepository) :
+class LocationsFeatureUseCases @Inject constructor(private val baseRepository: LocationRepository) :
     LocationProvider, UseCase<LocationDomain> {
     override lateinit var useCase: CompositionUseCase<LocationDomain>
 

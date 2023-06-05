@@ -6,7 +6,7 @@ import com.example.thindie.astonrickandmorty.domain.filtering.EpisodeFilter
 import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 import javax.inject.Inject
 
-class EpisodesFeatureUseCase @Inject constructor(private val baseRepository: EpisodeRepository) :
+class EpisodesFeatureUseCases @Inject constructor(private val baseRepository: EpisodeRepository) :
     EpisodeProvider, UseCase<EpisodeDomain> {
     override lateinit var useCase: CompositionUseCase<EpisodeDomain>
 
