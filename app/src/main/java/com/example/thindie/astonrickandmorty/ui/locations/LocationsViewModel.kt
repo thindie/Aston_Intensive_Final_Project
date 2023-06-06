@@ -7,8 +7,9 @@ import com.example.thindie.astonrickandmorty.domain.locations.LocationProvider
 import com.example.thindie.astonrickandmorty.ui.basis.BaseViewModel
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
+import javax.inject.Inject
 
-class LocationsViewModel(private val provider: LocationProvider) :
+class LocationsViewModel @Inject constructor(private val provider: LocationProvider) :
     BaseViewModel<LocationDomain, LocationsFilter>(provider),
     SearchEngineResultConsumer {
 

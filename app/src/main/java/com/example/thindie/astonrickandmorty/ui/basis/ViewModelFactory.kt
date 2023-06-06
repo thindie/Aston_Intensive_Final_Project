@@ -6,7 +6,7 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 class ViewModelsFactory
-@Inject constructor(private val storedViewModels: Map<Class<out ViewModel>, Provider<ViewModel>>) :
+@Inject constructor(private val storedViewModels: Map<Class<out ViewModel>,@JvmSuppressWildcards Provider<ViewModel>>) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return requireNotNull(storedViewModels[modelClass]) {

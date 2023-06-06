@@ -4,13 +4,22 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.example.thindie.astonrickandmorty.application.FragmentsRouter
+import com.example.thindie.astonrickandmorty.data.DataLayerDependencyProvider
+import com.example.thindie.astonrickandmorty.ui.di.BaseFragmentComponent
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngine
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineManager
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineUser
+import javax.inject.Inject
 
 abstract class BaseFragment : Fragment(), SearchEngineUser {
+
+
+    @Inject
+    lateinit var factory: ViewModelsFactory
+
 
     private var _searchEngine: SearchEngine? = null
     protected val searchEngine
@@ -31,6 +40,7 @@ abstract class BaseFragment : Fragment(), SearchEngineUser {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         _activity = this.requireActivity()
+
         SearchEngine.inject(this)
     }
 
@@ -44,13 +54,13 @@ abstract class BaseFragment : Fragment(), SearchEngineUser {
         if (_searchEngine == null) _searchEngine = engine
     }
 
-    protected fun <T : ViewModel?> approve(t: T?, owner: ViewModelStoreOwner): T {
-        val obj =
-            requireNotNull(t) {
-                "check VM initialisation" +
-                        " ${owner::class.java.name}"
-            }
-        return obj
+    protected inline fun <reified T : ViewModel> getVM(owner: ViewModelStoreOwner): T {
+        return ViewModelProvider(owner, factory)[T::class.java]
     }
+
+    fun initFragmentComponent(dataLayerDependencyProvider: DataLayerDependencyProvider) {
+        BaseFragmentComponent.install(component = dataLayerDependencyProvider).inject(this)
+    }
+
 }
 

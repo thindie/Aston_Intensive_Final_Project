@@ -12,8 +12,9 @@ import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageRepository
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 
-@Module
+/*@Module
 interface RepositoryModule {
 
     @Binds
@@ -26,11 +27,11 @@ interface RepositoryModule {
     @Binds
     fun bindEpisodesRepository(impl: EpisodesRepositoryImpl): EpisodeRepository
 
-}
+}*/
 
 @Module
     (
-    includes = [RepositoryModule::class]
+    includes = [RepositoryProviderModule::class]
 )
 
 interface BaseRepositoryModule {
@@ -42,5 +43,26 @@ interface BaseRepositoryModule {
 
     @Binds
     fun bindBaseRepositoryPersonages(repository: PersonageRepository): BaseRepository<PersonageDomain>
+
+}
+
+@Module
+class RepositoryProviderModule {
+    @Provides
+    fun provideLocationsRepository(impl: LocationsRepositoryImpl): LocationRepository {
+        return impl
+    }
+
+    @Provides
+    fun providePersonageRepository(impl: PersonagesRepositoryImpl): PersonageRepository {
+        return impl
+    }
+
+
+    @Provides
+    fun provideEpisodesRepository(impl: EpisodesRepositoryImpl): EpisodeRepository {
+        return impl
+    }
+
 
 }

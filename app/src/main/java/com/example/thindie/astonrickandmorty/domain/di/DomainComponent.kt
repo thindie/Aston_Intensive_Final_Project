@@ -6,21 +6,20 @@ import dagger.Component
 @Component
     (
     dependencies = [DataLayerDependencyProvider::class],
-    modules = [DomainModule::class]
+    modules = [BaseDomainProviderModule::class]
 )
 interface DomainComponent {
 
     companion object {
-        fun  install(dependencyProvider: DataLayerDependencyProvider): DomainComponent {
-            return DaggerDomainComponent.factory().create(dependencyProvider)
-
+        fun install(repositoryProvider: DataLayerDependencyProvider): DomainComponent {
+            return DaggerDomainComponent.factory().create(repositoryProvider)
         }
 
     }
 
     @Component.Factory
     interface Factory {
-        fun create(dependencyProvider: DataLayerDependencyProvider): DomainComponent
+        fun create(repositoryProvider: DataLayerDependencyProvider): DomainComponent
     }
 
 }

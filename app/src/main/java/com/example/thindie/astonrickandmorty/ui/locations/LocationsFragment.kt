@@ -1,11 +1,9 @@
 package com.example.thindie.astonrickandmorty.ui.locations
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import com.example.thindie.astonrickandmorty.databinding.FragmentLocationsBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
@@ -16,15 +14,8 @@ class LocationsFragment : BaseFragment() {
     private var _binding: FragmentLocationsBinding? = null
     private val binding get() = _binding!!
 
-    private var viewModel: LocationsViewModel? = null
+    private val viewModel: LocationsViewModel by lazy { getVM(this) }
 
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (viewModel == null) viewModel =
-            ViewModelProvider(this)[LocationsViewModel::class.java]
-
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,7 +40,7 @@ class LocationsFragment : BaseFragment() {
     }
 
     override fun getSearchingConsumer(): SearchEngineResultConsumer {
-        return approve(viewModel, this)
+        return viewModel
     }
 
     override fun getSearchAbleList(): List<SearchAble> {

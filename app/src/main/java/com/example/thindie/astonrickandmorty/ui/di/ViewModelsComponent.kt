@@ -6,20 +6,21 @@ import dagger.Component
 
 
 @Component(
-    dependencies = [DataLayerDependencyProvider::class],
-    modules = [ViewModelFactoryModule::class, ViewModelsModule::class]
+    dependencies = [DataLayerDependencyProvider::class, DomainComponent::class],
+    modules = [ViewModelFactoryModule::class]
 )
 interface ViewModelsComponent {
     companion object {
-        fun install(component: DataLayerDependencyProvider): ViewModelsComponent {
-            return DaggerViewModelsComponent.factory().create(component)
+        fun install(component: DataLayerDependencyProvider, domainComponent: DomainComponent): ViewModelsComponent {
+            return DaggerViewModelsComponent.factory().create(component, domainComponent)
         }
     }
 
     @Component.Factory
     interface Factory {
         fun create(
-            component: DataLayerDependencyProvider
+            component: DataLayerDependencyProvider,
+            domainComponent: DomainComponent
         ): ViewModelsComponent
     }
 }

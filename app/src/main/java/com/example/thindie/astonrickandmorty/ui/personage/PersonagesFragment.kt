@@ -1,15 +1,11 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonagesBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
-import com.example.thindie.astonrickandmorty.ui.basis.BaseViewModel
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
 
@@ -18,13 +14,7 @@ class PersonagesFragment : BaseFragment() {
     private var _binding: FragmentPersonagesBinding? = null
     private val binding get() = _binding!!
 
-   private val viewModel: PersonagesViewModel by lazy { ViewModelProvider(this)[PersonagesViewModel::class.java] }
-
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-    }
+    private val viewModel: PersonagesViewModel by lazy { getVM(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +28,7 @@ class PersonagesFragment : BaseFragment() {
                 }
                 else -> {}
             }*/
-        }
+    }
 
 
     override fun onCreateView(
