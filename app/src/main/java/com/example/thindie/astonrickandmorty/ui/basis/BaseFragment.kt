@@ -10,8 +10,8 @@ import com.example.thindie.astonrickandmorty.application.FragmentsRouter
 import com.example.thindie.astonrickandmorty.application.RickAndMortyApplication
 import com.example.thindie.astonrickandmorty.application.di.AppComponent
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngine
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineManager
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineUser
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineManager
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineUser
 import javax.inject.Inject
 
 abstract class BaseFragment : Fragment(), SearchEngineUser {

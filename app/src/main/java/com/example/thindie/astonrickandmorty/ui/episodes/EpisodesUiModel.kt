@@ -1,8 +1,8 @@
 package com.example.thindie.astonrickandmorty.ui.episodes
 
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.MinorComponent
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.MinorComponent
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 
 data class EpisodesUiModel(
     val airDate: String,
@@ -16,7 +16,7 @@ data class EpisodesUiModel(
 
 
     override fun <T : SearchAble> getReified(): T {
-        return this.toUiEntity<EpisodesUiModel>() as T
+        return this  as T
     }
 
     override fun getMajorComponent(): String {

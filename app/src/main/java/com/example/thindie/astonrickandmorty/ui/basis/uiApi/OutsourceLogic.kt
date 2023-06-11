@@ -1,10 +1,13 @@
 package com.example.thindie.astonrickandmorty.ui.basis.uiApi
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.domain.BaseProvider
 import com.example.thindie.astonrickandmorty.domain.filtering.Filter
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 
 class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain, Filters>) {
 
@@ -13,6 +16,23 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
 
     val observable: LiveData<UiState>
         get() = _observable
+
+
+    fun onScrollEvent(scroll: Scroll, action: () -> Unit) {
+        when (scroll) {
+            Scroll.STILL -> {
+                /* ignore */
+            }
+            Scroll.BOTTOM -> {
+                _observable.value = UiState.Loading
+                action()
+            }
+            Scroll.TOP -> {
+                _observable.value = UiState.Loading
+                action()
+            }
+        }
+    }
 
     suspend fun fetchAll(
         mapper: (Domain) -> SearchAble,
@@ -37,7 +57,12 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
     fun onSearch(
         resultList: List<SearchAble>,
     ) {
+        if (resultList.isEmpty()) {
+            _observable.value =
+                UiState.BadResultWithMessage(R.string.error_message_noting_found)
+        }
         _observable.value = UiState.SuccessFetchResult(resultList)
+
     }
 
 
@@ -71,6 +96,14 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
             UiState()
 
         data class BadResult(val error: Throwable) : UiState()
+
+        object Loading : UiState()
+
+        data class BadResultWithMessage(
+            @StringRes val id: Int
+        ) : UiState()
+
+
     }
 
     companion object {

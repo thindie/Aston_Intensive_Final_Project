@@ -1,7 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,21 +8,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonagesBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
+import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
-import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
-import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesRecyclerView
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesSearchAbleAdaptedRecycleViewAdapter
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 
-class PersonagesFragment : BaseFragment(), UsesRecyclerView {
-    private lateinit var adapter: RecyclerViewAdapter<PersonagesUiModel, UiHolder>
+class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter {
+
 
     private var _binding: FragmentPersonagesBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: PersonagesViewModel by lazy { getVM(this) }
+
+    private lateinit var listener: EventMediator<Scroll>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,7 +35,20 @@ class PersonagesFragment : BaseFragment(), UsesRecyclerView {
         searchEngine.observeSearchCriteria()
         setRecyclerView()
         observeRecyclerView()
+        viewModel.viewState.observe(viewLifecycleOwner) {
+            when (it) {
+                is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
+                    viewModel.adapter.submitList(it.list.map { it.toUiEntity() })
+                }
+                else -> {}
+            }
+
+        }
     }
+
+    private lateinit var _recyclerView: RecyclerView
+    override val recyclerView: RecyclerView
+        get() = _recyclerView
 
     override fun getHolderIdSupplier(): ViewHolderIdSupplier {
         return ViewHolderIdSupplier(
@@ -46,20 +62,31 @@ class PersonagesFragment : BaseFragment(), UsesRecyclerView {
     }
 
     override fun setRecyclerView() {
-        val recyclerView: RecyclerView = binding.recyclerViewGridParent.recyclerViewGrid
-        adapter = RecyclerViewAdapter(getHolderIdSupplier())
-        recyclerView.adapter = adapter
+            _recyclerView =
+                binding.recyclerViewGridParent.recyclerViewGrid
+            viewModel.setAdapter(RecyclerViewAdapter(getHolderIdSupplier()))
+            _recyclerView.adapter = viewModel.adapter
+            if (_recyclerView.adapter is EventMediator<*>) {
+                listener = _recyclerView.adapter as EventMediator<Scroll>
+            }
     }
 
     override fun observeRecyclerView() {
-        viewModel.viewState.observe(viewLifecycleOwner) {
-            when (it) {
-                is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
-                    adapter.submitList(it.list.map { it.getReified() })
+            viewModel.observe(listener)
+            recyclerView.addOnScrollListener(
+                object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+
+                        if (!this@PersonagesFragment.recyclerView.canScrollVertically(1)) {
+                            listener.onEvent()
+                        }
+                        if (!this@PersonagesFragment.recyclerView.canScrollVertically(-1)) {
+                            listener.onEvent()
+                        }
+                    }
+
                 }
-                else -> {}
-            }
-        }
+            )
     }
 
 
@@ -82,7 +109,12 @@ class PersonagesFragment : BaseFragment(), UsesRecyclerView {
     }
 
     override fun getSearchAbleList(): List<SearchAble> {
-        return emptyList() //todo
+         return viewModel.adapter.currentList
+    }
+
+    override fun notifyStatusChanged() {
+        if (listener.isActive()) listener.setStatus(listener.statusTurnedOff)
+        else listener.setStatus(listener.statusActive)
     }
 
 }

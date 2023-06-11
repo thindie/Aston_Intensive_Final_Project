@@ -1,6 +1,5 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,15 +8,23 @@ import com.example.thindie.astonrickandmorty.domain.filtering.PersonageFilter
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageProvider
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapPersonageDomain
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvider) : ViewModel(),
-    SearchEngineResultConsumer, OutSourced<PersonageDomain, PersonageFilter> {
+    SearchEngineResultConsumer, OutSourced<PersonageDomain, PersonageFilter>,
+    RecyclerViewAdapterManager<PersonagesUiModel, UiHolder, Scroll> {
 
     private lateinit var outSource: OutsourceLogic<PersonageDomain, PersonageFilter>
 
@@ -64,5 +71,22 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
 
     companion object {
         private const val BLANK_STRING = ""
+    }
+
+    private lateinit var _adapter: RecyclerViewAdapter<PersonagesUiModel, UiHolder>
+    override val adapter: RecyclerViewAdapter<PersonagesUiModel, UiHolder>
+        get() = _adapter
+
+    override fun observe(eventStateListener: EventMediator<Scroll>) {
+        eventStateListener
+            .eventFlow
+            .onEach { scroll -> if(eventStateListener.isActive()) {
+                outSource.onScrollEvent(scroll) { onClickedNavigationButton() }
+            } }
+            .launchIn(viewModelScope)
+    }
+
+    override fun setAdapter(adapter: RecyclerViewAdapter<PersonagesUiModel, UiHolder>) {
+        if (!this::_adapter.isInitialized) _adapter = adapter
     }
 }

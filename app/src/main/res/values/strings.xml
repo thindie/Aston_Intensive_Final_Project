@@ -4,4 +4,5 @@
     <string name="title_episodes">Episodes</string>
     <string name="title_locations">Locations</string>
     <string name="search">search..</string>
+    <string name="error_message_noting_found">Nothing found.. relaunch data..</string>
 </resources>

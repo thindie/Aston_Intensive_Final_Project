@@ -1,9 +1,10 @@
-package com.example.thindie.astonrickandmorty.ui.uiutils.searchBar
+package com.example.thindie.astonrickandmorty.ui.uiutils
 
 import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngine
 import com.google.android.material.textfield.TextInputEditText
 
 interface SearchEngineManager {
@@ -15,6 +16,8 @@ interface SearchEngineUser {
     fun getSearchingConsumer(): SearchEngineResultConsumer
     fun getSearchAbleList(): List<SearchAble>
     fun setEngine(engine: SearchEngine)
+
+    fun notifyStatusChanged()
 }
 
 interface SearchEngineResultConsumer {

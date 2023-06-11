@@ -10,7 +10,7 @@ import com.example.thindie.astonrickandmorty.ui.locations.LocationsUiModel
 import com.example.thindie.astonrickandmorty.ui.personage.LocationUi
 import com.example.thindie.astonrickandmorty.ui.personage.OriginUi
 import com.example.thindie.astonrickandmorty.ui.personage.PersonagesUiModel
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 
 fun EpisodeDomain.toEpisodesUiModel(): EpisodesUiModel {
     return EpisodesUiModel(

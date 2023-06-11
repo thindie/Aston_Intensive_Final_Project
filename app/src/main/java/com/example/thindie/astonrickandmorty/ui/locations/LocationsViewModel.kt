@@ -8,17 +8,26 @@ import com.example.thindie.astonrickandmorty.domain.filtering.LocationsFilter
 import com.example.thindie.astonrickandmorty.domain.locations.LocationDomain
 import com.example.thindie.astonrickandmorty.domain.locations.LocationProvider
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapLocationDomain
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LocationsViewModel @Inject constructor(private val provider: LocationProvider) : ViewModel(),
-    SearchEngineResultConsumer, OutSourced<LocationDomain, LocationsFilter> {
+    SearchEngineResultConsumer, OutSourced<LocationDomain, LocationsFilter>,
+    RecyclerViewAdapterManager<LocationsUiModel, UiHolder, Scroll> {
 
     private lateinit var outSource: OutsourceLogic<LocationDomain, LocationsFilter>
+
 
     init {
         OutsourceLogic.inject(this, provider)
@@ -61,5 +70,24 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
 
     companion object {
         private const val BLANK_STRING = ""
+    }
+
+    private lateinit var _adapter: RecyclerViewAdapter<LocationsUiModel, UiHolder>
+
+    override val adapter: RecyclerViewAdapter<LocationsUiModel, UiHolder>
+        get() = _adapter
+
+    override fun   observe(eventStateListener: EventMediator<Scroll>) {
+        eventStateListener
+            .eventFlow
+            .onEach { scroll -> if(eventStateListener.isActive()) {
+                outSource.onScrollEvent(scroll) { onClickedNavigationButton() }
+            } }
+            .launchIn(viewModelScope)
+    }
+
+
+    override fun setAdapter(adapter: RecyclerViewAdapter<LocationsUiModel, UiHolder>) {
+        if (!this::_adapter.isInitialized) _adapter = adapter
     }
 }

@@ -9,23 +9,29 @@ import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentLocationsBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
-import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
-import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesRecyclerView
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchAble
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineResultConsumer
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesSearchAbleAdaptedRecycleViewAdapter
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 
-class LocationsFragment : BaseFragment(), UsesRecyclerView {
+class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter {
 
-    private lateinit var adapter: RecyclerViewAdapter<LocationsUiModel, UiHolder>
+    override val recyclerView: RecyclerView
+        get() = _recyclerView
+    private lateinit var _recyclerView: RecyclerView
+
+    private lateinit var listener: EventMediator<Scroll>
 
     private var _binding: FragmentLocationsBinding? = null
+
     private val binding get() = _binding!!
 
-    private val viewModel: LocationsViewModel by lazy { getVM(this) }
 
+    private val viewModel: LocationsViewModel by lazy { getVM(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,6 +40,15 @@ class LocationsFragment : BaseFragment(), UsesRecyclerView {
         viewModel.onClickedNavigationButton()
         setRecyclerView()
         observeRecyclerView()
+        viewModel.viewState.observe(viewLifecycleOwner) {
+            when (it) {
+                is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
+                    viewModel.adapter.submitList(it.list.map { it.toUiEntity() })
+                }
+                else -> {}
+            }
+
+        }
     }
 
     override fun getHolderIdSupplier(): ViewHolderIdSupplier {
@@ -46,21 +61,33 @@ class LocationsFragment : BaseFragment(), UsesRecyclerView {
     }
 
     override fun setRecyclerView() {
-        val recyclerView: RecyclerView = binding.recyclerViewGridParent.recyclerViewGrid
-        adapter = RecyclerViewAdapter(getHolderIdSupplier())
-        recyclerView.adapter = adapter
+
+            _recyclerView =
+                binding.recyclerViewGridParent.recyclerViewGrid
+            viewModel.setAdapter(RecyclerViewAdapter(getHolderIdSupplier()))
+            _recyclerView.adapter = viewModel.adapter
+            if (_recyclerView.adapter is EventMediator<*>) {
+                listener = _recyclerView.adapter as EventMediator<Scroll>
+            }
+
     }
 
     override fun observeRecyclerView() {
-        viewModel.viewState.observe(viewLifecycleOwner) {
-            when (it) {
-                is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
-                    adapter.submitList(it.list.map { it.toUiEntity() })
+
+
+            viewModel.observe(listener)
+            recyclerView.addOnScrollListener(
+                object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        if (!this@LocationsFragment.recyclerView.canScrollVertically(1)) {
+                            listener.onEvent()
+                        }
+                    }
                 }
-                else -> {}
-            }
-        }
+            )
+
     }
+
 
 
     override fun onCreateView(
@@ -83,6 +110,11 @@ class LocationsFragment : BaseFragment(), UsesRecyclerView {
     }
 
     override fun getSearchAbleList(): List<SearchAble> {
-        return emptyList()
+        return viewModel.adapter.currentList
+    }
+
+    override fun notifyStatusChanged() {
+        if (listener.isActive()) listener.setStatus(listener.statusTurnedOff)
+        else listener.setStatus(listener.statusActive)
     }
 }

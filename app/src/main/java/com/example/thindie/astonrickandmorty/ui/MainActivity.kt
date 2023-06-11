@@ -9,8 +9,8 @@ import com.example.thindie.astonrickandmorty.application.Router
 import com.example.thindie.astonrickandmorty.ui.episodes.EpisodesFragment
 import com.example.thindie.astonrickandmorty.ui.locations.LocationsFragment
 import com.example.thindie.astonrickandmorty.ui.personage.PersonagesFragment
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngineManager
-import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchObservable
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineManager
+import com.example.thindie.astonrickandmorty.ui.uiutils.SearchObservable
 import com.example.thindie.astonrickandmorty.ui.uiutils.widGet
 
 class MainActivity : AppCompatActivity(), FragmentsRouter, SearchEngineManager {
