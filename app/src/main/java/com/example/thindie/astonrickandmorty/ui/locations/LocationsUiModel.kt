@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.locations
 
+import com.example.thindie.astonrickandmorty.ui.basis.UiLinkPool
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.uiutils.MinorComponent
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
@@ -11,7 +12,8 @@ data class LocationsUiModel(
     val name: String,
     val residents: List<String>,
     val type: String,
-    val url: String
+    val url: String,
+    val pool: UiLinkPool
 ) : SearchAble {
 
 

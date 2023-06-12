@@ -11,6 +11,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
@@ -64,7 +65,7 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
 
             _recyclerView =
                 binding.recyclerViewGridParent.recyclerViewGrid
-            viewModel.setAdapter(RecyclerViewAdapter(getHolderIdSupplier()))
+            viewModel.setAdapter(RecyclerViewAdapterMediatorScroll(getHolderIdSupplier()))
             _recyclerView.adapter = viewModel.adapter
             if (_recyclerView.adapter is EventMediator<*>) {
                 listener = _recyclerView.adapter as EventMediator<Scroll>
@@ -113,8 +114,4 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
         return viewModel.adapter.currentList
     }
 
-    override fun notifyStatusChanged() {
-        if (listener.isActive()) listener.setStatus(listener.statusTurnedOff)
-        else listener.setStatus(listener.statusActive)
-    }
 }

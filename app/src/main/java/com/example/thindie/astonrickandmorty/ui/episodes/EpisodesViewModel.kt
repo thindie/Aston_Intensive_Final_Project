@@ -11,6 +11,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapEpisodesDomain
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
@@ -27,9 +28,9 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
     OutSourced<EpisodeDomain, EpisodeFilter>,
     RecyclerViewAdapterManager<EpisodesUiModel, UiHolder, Scroll> {
 
-    override val adapter: RecyclerViewAdapter<EpisodesUiModel, UiHolder>
+    override val adapter: RecyclerViewAdapterMediatorScroll<EpisodesUiModel, UiHolder>
         get() = _adapterHolder
-    private lateinit var _adapterHolder: RecyclerViewAdapter<EpisodesUiModel, UiHolder>
+    private lateinit var _adapterHolder: RecyclerViewAdapterMediatorScroll<EpisodesUiModel, UiHolder>
     private lateinit var outSource: OutsourceLogic<EpisodeDomain, EpisodeFilter>
 
     init {
@@ -40,6 +41,7 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
         get() = outSource.observable
 
 
+
     fun onClickedNavigationButton() {
         viewModelScope.launch {
             outSource.fetchAll(mapEpisodesDomain) {
@@ -48,11 +50,37 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
         }
     }
 
-    fun clickConcrete(id: Int) {
+    fun onReactScrollDown(){
         viewModelScope.launch {
-            outSource.fetchConcrete(id, mapEpisodesDomain)
+            outSource.fetchAll(mapEpisodesDomain, url = adapter.currentList.last().pool.next){
+                onApplyFilter()
+            }
         }
     }
+
+    fun onReactScrollUp(){
+        viewModelScope.launch {
+            outSource.fetchAll(mapEpisodesDomain, url = adapter.currentList.last().pool.prev){
+                onApplyFilter()
+            }
+        }
+    }
+
+    fun onClickConcrete(id: Int, isTargetSingle: Boolean = true) {
+        viewModelScope.launch {
+            outSource.fetchConcrete(listOf(id.toString()), mapEpisodesDomain, isTargetSingle)
+        }
+    }
+
+    fun onConcreteScreenObtainList(links: List<String>, isTargetSingle: Boolean = false ) {
+        viewModelScope.launch {
+            outSource.fetchConcrete(links, mapEpisodesDomain, isTargetSingle)
+        }
+    }
+
+
+
+
 
     fun onApplyFilter(
         name: String = BLANK_STRING,
@@ -61,29 +89,28 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
         return EpisodeFilter(name, episode)
     }
 
+
     override fun onSearchResult(resultList: List<SearchAble>) {
         outSource.onSearch(resultList)
     }
-
 
     override fun setOutSource(outsourceLogic: OutsourceLogic<EpisodeDomain, EpisodeFilter>) {
         if (!this::outSource.isInitialized) outSource = outsourceLogic
     }
 
-    override fun setAdapter(adapter: RecyclerViewAdapter<EpisodesUiModel, UiHolder>) {
-        if (!this::_adapterHolder.isInitialized) _adapterHolder = adapter
+
+    override fun <Adapter : RecyclerViewAdapter<EpisodesUiModel, UiHolder>> setAdapter(adapter: Adapter) {
+        if (!this::_adapterHolder.isInitialized    ) {
+
+            _adapterHolder =  adapter as RecyclerViewAdapterMediatorScroll<EpisodesUiModel, UiHolder>
+        }
     }
 
-
     override fun observe(eventStateListener: EventMediator<Scroll>) {
-        viewModelScope.launch {
             eventStateListener
-                .eventFlow
-                .onEach { scroll -> if(eventStateListener.isActive()) {
-                    outSource.onScrollEvent(scroll) { onClickedNavigationButton() }
-                } }
-                .launchIn(this)
-        }
+                 .event = {
+                    scroll ->  onReactScrollDown()
+            }
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
+import com.example.thindie.astonrickandmorty.ui.basis.UiLinkPool
 import com.example.thindie.astonrickandmorty.ui.uiutils.MinorComponent
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 
@@ -15,7 +16,8 @@ data class PersonagesUiModel(
     val species: String,
     val status: String,
     val type: String,
-    val url: String
+    val url: String,
+    val pool: UiLinkPool
 
 ) : SearchAble {
 

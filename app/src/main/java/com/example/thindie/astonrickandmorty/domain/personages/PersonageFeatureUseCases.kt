@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.domain.personages
 
+import android.util.Log
 import com.example.thindie.astonrickandmorty.domain.CompositionUseCase
 import com.example.thindie.astonrickandmorty.domain.UseCase
 import com.example.thindie.astonrickandmorty.domain.filtering.Filter
@@ -20,13 +21,18 @@ class PersonageFeatureUseCases @Inject constructor(private val baseRepository: P
     }
 
 
-    override suspend fun getConcrete(id: Int): Result<PersonageDomain> {
-        return useCase.fetchConcreteOrRetakeFromBase(id)
+    override suspend fun getConcrete(concretes: List<String>): Result<List<PersonageDomain>> {
+        return useCase.fetchConcrete(concretes)
     }
 
-    override suspend fun getAll(filter: Filter<PersonageDomain, PersonageFilter>): Result<List<PersonageDomain>> {
-        return if (filter.isDefault) useCase.fetchAllOrRetakeFromBase()
-        else useCase.onSpecifiedFilter(filter) { useCase.fetchAllOrRetakeFromBase() }
+    override suspend fun getAll(
+        filter: Filter<PersonageDomain, PersonageFilter>,
+        url: String?,
+        idS: List<String>
+    ): Result<List<PersonageDomain>> {
+        Log.d("SERVICE_TAG", url.toString())
+        return if (filter.isDefault) useCase.fetchAll(url, idS)
+        else useCase.onSpecifiedFilter(filter) { useCase.fetchAll(url, idS) }
     }
 
 

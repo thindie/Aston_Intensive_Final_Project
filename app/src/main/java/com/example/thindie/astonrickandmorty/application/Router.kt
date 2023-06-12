@@ -22,6 +22,8 @@ class Router private constructor(
     private val startDestination: String = startScreen::class.java.name
 ) {
 
+    val currentScreen: String
+    get() = destinations.last()
 
     fun navigate(fragment: Fragment? = null) {
         if (fragment == null) onInit()

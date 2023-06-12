@@ -1,5 +1,7 @@
 package com.example.thindie.astonrickandmorty.domain.personages
 
+import com.example.thindie.astonrickandmorty.domain.LinkPool
+
 data class PersonageDomain(
     val id: Int,
     val created: String,
@@ -12,5 +14,6 @@ data class PersonageDomain(
     val species: String,
     val status: String,
     val type: String,
-    val url: String
+    val url: String,
+    val pool: LinkPool
 )

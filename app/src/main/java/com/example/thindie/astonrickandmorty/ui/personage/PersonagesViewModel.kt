@@ -11,6 +11,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapPersonageDomain
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
@@ -44,9 +45,37 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
         }
     }
 
-    fun clickConcrete(id: Int) {
+    fun onReactScrollDown() {
+        if (outSource.scroll is OutsourceLogic.ScrollDispatcher.Listening)
+            viewModelScope.launch {
+
+                outSource.fetchAll(
+                    mapPersonageDomain,
+                    url = "https://rickandmortyapi.com/api/character/?page=2"
+                ) {
+                    onApplyFilter()
+                }
+            }
+
+    }
+
+    fun onReactScrollUp() {
         viewModelScope.launch {
-            outSource.fetchConcrete(id, mapPersonageDomain)
+            outSource.fetchAll(mapPersonageDomain, url = adapter.currentList.last().pool.prev) {
+                onApplyFilter()
+            }
+        }
+    }
+
+    fun onClickConcrete(id: Int, isTargetSingle: Boolean = true) {
+        viewModelScope.launch {
+            outSource.fetchConcrete(listOf(id.toString()), mapPersonageDomain, isTargetSingle)
+        }
+    }
+
+    fun onConcreteScreenObtainList(links: List<String>, isTargetSingle: Boolean = false) {
+        viewModelScope.launch {
+            outSource.fetchConcrete(links, mapPersonageDomain, isTargetSingle)
         }
     }
 
@@ -73,20 +102,22 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
         private const val BLANK_STRING = ""
     }
 
-    private lateinit var _adapter: RecyclerViewAdapter<PersonagesUiModel, UiHolder>
-    override val adapter: RecyclerViewAdapter<PersonagesUiModel, UiHolder>
+    private lateinit var _adapter: RecyclerViewAdapterMediatorScroll<PersonagesUiModel, UiHolder>
+    override val adapter: RecyclerViewAdapterMediatorScroll<PersonagesUiModel, UiHolder>
         get() = _adapter
 
     override fun observe(eventStateListener: EventMediator<Scroll>) {
         eventStateListener
-            .eventFlow
-            .onEach { scroll -> if(eventStateListener.isActive()) {
-                outSource.onScrollEvent(scroll) { onClickedNavigationButton() }
-            } }
-            .launchIn(viewModelScope)
+            .event = {
+                scroll ->  onReactScrollDown()
+        }
+
     }
 
-    override fun setAdapter(adapter: RecyclerViewAdapter<PersonagesUiModel, UiHolder>) {
-        if (!this::_adapter.isInitialized) _adapter = adapter
+    override fun <Adapter : RecyclerViewAdapter<PersonagesUiModel, UiHolder>> setAdapter(adapter: Adapter) {
+        if (!this::_adapter.isInitialized) {
+
+            _adapter = adapter as RecyclerViewAdapterMediatorScroll<PersonagesUiModel, UiHolder>
+        }
     }
 }

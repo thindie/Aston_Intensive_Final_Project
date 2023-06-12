@@ -3,32 +3,30 @@ package com.example.thindie.astonrickandmorty.data
 import com.example.thindie.astonrickandmorty.data.localsource.entity.EpisodeDbModel
 import com.example.thindie.astonrickandmorty.data.localsource.entity.LocationDbModel
 import com.example.thindie.astonrickandmorty.data.localsource.entity.PersonageDbModel
+import com.example.thindie.astonrickandmorty.data.remotesource.entity.Info
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.episode.EpisodesDto
+import com.example.thindie.astonrickandmorty.data.remotesource.entity.episode.EpisodesResponse
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.location.LocationDto
+import com.example.thindie.astonrickandmorty.data.remotesource.entity.location.LocationResponse
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.personage.Origin
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.personage.PersonageDto
-import com.example.thindie.astonrickandmorty.data.remotesource.util.ApiParams
+import com.example.thindie.astonrickandmorty.data.remotesource.entity.personage.PersonageResponse
+import com.example.thindie.astonrickandmorty.domain.LinkPool
 import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeDomain
 import com.example.thindie.astonrickandmorty.domain.locations.LocationDomain
 import com.example.thindie.astonrickandmorty.domain.personages.Location
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
-import okio.IOException
-import retrofit2.Response
 
 
-suspend fun <T> getAndResult(foo: suspend () -> Response<T>): Result<T> {
-    val fooResult = foo()
-    return if (fooResult.isSuccessful) {
-        try {
-            Result.success(requireNotNull(fooResult.body()) { ApiParams.ON_NULL_RESPONSE })
-        } catch (failedRequirement: IllegalArgumentException) {
-            Result.failure(failedRequirement)
-        }
-
-    } else Result.failure(IOException(ApiParams.ON_FAIL))
+fun Info.toLinkPool(): LinkPool {
+    return LinkPool(prev.orEmpty(), next.orEmpty())
 }
 
-fun EpisodesDto.toEpisodesDomain(): EpisodeDomain {
+val stubLinkPool: () -> LinkPool = {
+    LinkPool("", "")
+}
+
+fun EpisodesDto.toEpisodesDomain(linkPoolChainer: () -> LinkPool): EpisodeDomain {
     return EpisodeDomain(
         airDate = airDate,
         characters = characters,
@@ -36,24 +34,77 @@ fun EpisodesDto.toEpisodesDomain(): EpisodeDomain {
         episode = episode,
         id = id,
         name = name,
-        url = url
+        url = url,
+        pool = linkPoolChainer()
     )
 }
+
+
+val episodesResponseToDomain: (EpisodesResponse) -> List<EpisodeDomain> =
+    { episodesResponse ->
+        val info = episodesResponse.info
+        episodesResponse.results.map { episodesDto ->
+            episodesDto.toEpisodesDomain { info.toLinkPool() }
+        }
+    }
+
+val personagesResponseToDomain: (PersonageResponse) -> List<PersonageDomain> =
+    { personagesResponse ->
+        val info = personagesResponse.info
+        personagesResponse.results.map { personagesDto ->
+            personagesDto.toPersonageDomain { info.toLinkPool() }
+        }
+    }
+
+val locationResponseToDomain: (LocationResponse) -> List<LocationDomain> =
+    { locationResponse ->
+        val info = locationResponse.info
+        locationResponse.results.map { locationsDto ->
+            locationsDto.toLocationDomain { info.toLinkPool() }
+        }
+    }
+
+val episodesDbModelToDomain: (EpisodeDbModel) -> EpisodeDomain = { episodeDbModel ->
+    episodeDbModel.toEpisodesDomain()
+}
+
+val locationsDbModelToDomain: (LocationDbModel) -> LocationDomain = { locationsDbModel ->
+    locationsDbModel.toLocationDomain()
+}
+
+val personagesDbModelToDomain: (PersonageDbModel) -> PersonageDomain = { personagesDbModel ->
+    personagesDbModel.toPersonageDomain()
+}
+
+
+val episodesDtoToDomain: (EpisodesDto) -> EpisodeDomain = { episodeDto ->
+    episodeDto.toEpisodesDomain(stubLinkPool)
+}
+
+val locationsDtoToDomain: (LocationDto) -> LocationDomain = { locationsDto ->
+    locationsDto.toLocationDomain(stubLinkPool)
+}
+
+val personagesDtoToDomain: (PersonageDto) -> PersonageDomain = { personagesDto ->
+    personagesDto.toPersonageDomain(stubLinkPool)
+}
+
 
 fun EpisodeDbModel.toEpisodesDomain(): EpisodeDomain {
     return EpisodeDomain(
         airDate = airDate,
-        characters = Converter.decompress(charactersList),
+        characters = characters,
         created = created,
         episode = episode,
         id = id,
         name = name,
-        url = url
+        url = url,
+        pool = pool
     )
 }
 
 
-fun PersonageDto.toPersonageDomain(): PersonageDomain {
+fun PersonageDto.toPersonageDomain(linkPoolChainer: () -> LinkPool): PersonageDomain {
     return PersonageDomain(
         id = id,
         created = created,
@@ -64,12 +115,13 @@ fun PersonageDto.toPersonageDomain(): PersonageDomain {
         name = name,
         origin = origin.toDomainOrigin(),
         species = species,
-        status = status, type = type, url = url
+        status = status, type = type, url = url,
+        pool = linkPoolChainer()
     )
 }
 
 
-fun LocationDto.toLocationDomain(): LocationDomain {
+fun LocationDto.toLocationDomain(linkPoolChainer: () -> LinkPool): LocationDomain {
     return LocationDomain(
         created = created,
         dimension = dimension,
@@ -77,7 +129,8 @@ fun LocationDto.toLocationDomain(): LocationDomain {
         name = name,
         residents = residents,
         type = type,
-        url = url
+        url = url,
+        pool = linkPoolChainer()
     )
 }
 
@@ -94,12 +147,13 @@ fun com.example.thindie.astonrickandmorty.data.remotesource.entity.personage.Loc
 fun EpisodeDomain.toEpisodeDbModel(): EpisodeDbModel {
     return EpisodeDbModel(
         airDate = airDate,
-        charactersList = Converter.compress(characters),
+        characters = characters,
         created = created,
         episode = episode,
         id = id,
         name = name,
-        url = url
+        url = url,
+        pool = pool
     )
 }
 
@@ -109,9 +163,10 @@ fun LocationDbModel.toLocationDomain(): LocationDomain {
         dimension = dimension,
         id = id,
         name = name,
-        residents = Converter.decompress(residentsList),
+        residents = residents,
         type = type,
-        url = url
+        url = url,
+        pool = pool
     )
 }
 
@@ -122,9 +177,10 @@ fun LocationDomain.toLocationDbModel(): LocationDbModel {
         dimension = dimension,
         id = id,
         name = name,
-        residentsList = Converter.compress(residents),
+        residents = residents,
         type = type,
-        url = url
+        url = url,
+        pool = pool
     )
 }
 
@@ -132,14 +188,17 @@ fun PersonageDbModel.toPersonageDomain(): PersonageDomain {
     return PersonageDomain(
         id = id,
         created = created,
-        episode = Converter.decompress(episodesList),
+        episode = episode,
         gender = gender,
         image = image,
-        location = Converter.decompressLocation(location),
+        location = location,
         name = name,
-        origin = Converter.decompressOrigin(origin),
+        origin = origin,
         species = species,
-        status = status, type = type, url = url
+        status = status,
+        type = type,
+        url = url,
+        pool = pool
     )
 }
 
@@ -147,57 +206,19 @@ fun PersonageDomain.toPersonageDbModel(): PersonageDbModel {
     return PersonageDbModel(
         id = id,
         created = created,
-        episodesList = Converter.compress(episode),
+        episode = episode,
         gender = gender,
         image = image,
-        location = Converter.compress(location),
+        location = location,
         name = name,
-        origin = Converter.compress(origin),
+        origin = origin,
         species = species,
-        status = status, type = type, url = url
+        status = status,
+        type = type,
+        url = url,
+        pool = pool
     )
 }
 
-class Converter private constructor() {
-    companion object {
-        private const val SEPARATOR = "~-l1zzztSeqyaparatyort1!!!11-~"
-        fun <T> compress(list: Iterable<T>): String {
-            return list.joinToString { SEPARATOR }
-        }
-
-        fun decompress(string: String): List<String> {
-            return string.split(SEPARATOR)
-        }
-
-        fun compress(location: Location): String {
-            return location.name.plus(SEPARATOR).plus(location.url)
-        }
-
-        fun compress(origin: com.example.thindie.astonrickandmorty.domain.personages.Origin): String {
-            return origin.name.plus(SEPARATOR).plus(origin.url)
-        }
-
-        fun decompressOrigin(string: String): com.example.thindie.astonrickandmorty.domain.personages.Origin {
-            return try {
-                val list = decompress(string)
-                com.example.thindie.astonrickandmorty.domain.personages.Origin(
-                    list.first(),
-                    list.last()
-                )
-            } catch (e: Exception) {
-                com.example.thindie.astonrickandmorty.domain.personages.Origin("", "")
-            }
-        }
-
-        fun decompressLocation(string: String): Location {
-            return try {
-                val list = decompress(string)
-                Location(list.first(), list.last())
-            } catch (e: Exception) {
-                Location("", "")
-            }
-        }
-    }
-}
 
 

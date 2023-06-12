@@ -1,10 +1,12 @@
 package com.example.thindie.astonrickandmorty.ui.basis.mappers
 
+import com.example.thindie.astonrickandmorty.domain.LinkPool
 import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeDomain
 import com.example.thindie.astonrickandmorty.domain.locations.LocationDomain
 import com.example.thindie.astonrickandmorty.domain.personages.Location
 import com.example.thindie.astonrickandmorty.domain.personages.Origin
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
+import com.example.thindie.astonrickandmorty.ui.basis.UiLinkPool
 import com.example.thindie.astonrickandmorty.ui.episodes.EpisodesUiModel
 import com.example.thindie.astonrickandmorty.ui.locations.LocationsUiModel
 import com.example.thindie.astonrickandmorty.ui.personage.LocationUi
@@ -20,7 +22,8 @@ fun EpisodeDomain.toEpisodesUiModel(): EpisodesUiModel {
         episode = episode,
         id = id,
         name = name,
-        url = url
+        url = url,
+        pool = pool.toUiLinkPool()
     )
 }
 
@@ -36,7 +39,8 @@ fun EpisodesUiModel.toEpisodesDomain(): EpisodeDomain {
         episode = episode,
         id = id,
         name = name,
-        url = url
+        url = url,
+        pool = pool.toLinkPool()
     )
 }
 
@@ -49,7 +53,8 @@ fun LocationDomain.toLocationUiModel(): LocationsUiModel {
         name = name,
         residents = residents,
         type = type,
-        url = url
+        url = url,
+        pool = pool.toUiLinkPool()
     )
 }
 
@@ -65,7 +70,8 @@ fun LocationsUiModel.toLocationDomain(): LocationDomain {
         name = name,
         residents = residents,
         type = type,
-        url = url
+        url = url,
+        pool = pool.toLinkPool()
     )
 }
 
@@ -82,7 +88,8 @@ fun PersonageDomain.toPersonagesUiModel(): PersonagesUiModel {
         species = species,
         status = status,
         type = type,
-        url = url
+        url = url,
+        pool = pool.toUiLinkPool()
     )
 }
 
@@ -103,7 +110,8 @@ fun PersonagesUiModel.toPersonagesDomain(): PersonageDomain {
         species = species,
         status = status,
         type = type,
-        url = url
+        url = url,
+        pool = pool.toLinkPool()
     )
 }
 
@@ -124,7 +132,15 @@ fun LocationUi.toLocation(): Location {
     return Location(name, url)
 }
 
+fun UiLinkPool.toLinkPool(): LinkPool {
+    return LinkPool(prev, next)
+}
 
+fun  LinkPool.toUiLinkPool(): UiLinkPool {
+    return UiLinkPool(prev, next)
+}
+
+/*
 inline fun <reified T> SearchAble.toEntity(): T {
     return when (this::class) {
         PersonagesUiModel::class -> {
@@ -148,7 +164,7 @@ inline fun <reified T> SearchAble.toEntity(): T {
             )
         }
     }
-}
+}*/
 
 
 inline fun <reified T> SearchAble.toUiEntity(): T
@@ -171,3 +187,4 @@ inline fun <reified T> SearchAble.toUiEntity(): T
         }
     }
 }
+

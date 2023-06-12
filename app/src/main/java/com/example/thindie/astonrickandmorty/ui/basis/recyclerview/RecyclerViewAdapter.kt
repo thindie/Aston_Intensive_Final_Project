@@ -2,37 +2,19 @@
 
 package com.example.thindie.astonrickandmorty.ui.basis.recyclerview
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
-class RecyclerViewAdapter<Model : SearchAble, ViewHolder>
+open class RecyclerViewAdapter<Model : SearchAble, ViewHolder>
 constructor(private val viewHolderIdSupplier: ViewHolderIdSupplier) :
-    ListAdapter<Model, ViewHolder>(RecyclerDiffUtilCallBack<Model>()),
-    EventMediator<Scroll>
+    ListAdapter<Model, ViewHolder>(RecyclerDiffUtilCallBack<Model>())
+
         where ViewHolder : RecyclerView.ViewHolder, ViewHolder : SearchAbleAdapted {
 
-    private val _eventFlow: MutableStateFlow<Scroll> = MutableStateFlow(Scroll.STILL)
-    override val eventFlow = _eventFlow.asStateFlow()
-
-    private var isActiveAsScrollListener = statusActive
-    override fun isActive(): Boolean {
-        return isActiveAsScrollListener == statusActive
-    }
-
-    override fun setStatus(status: Int) {
-        when (status) {
-            0 -> isActiveAsScrollListener = statusTurnedOff
-            1 -> isActiveAsScrollListener = statusActive
-            else -> { /* ignore */ }
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return UiHolder(
@@ -60,34 +42,20 @@ constructor(private val viewHolderIdSupplier: ViewHolderIdSupplier) :
             )
         }
     }
-
-
-    override fun onEvent() {
-        Log.d("SERVICE_TAG", "triggered_event")
-
-        //todo
-        _eventFlow.value = Scroll.BOTTOM
-        _eventFlow.value = Scroll.STILL
-    }
-
-}
-
-enum class Scroll {
-    STILL, BOTTOM, TOP
 }
 
 
 class RecyclerDiffUtilCallBack<Model : SearchAble> : DiffUtil.ItemCallback<Model>() {
     override fun areItemsTheSame(oldItem: Model, newItem: Model): Boolean {
-        val oldItemLanded = oldItem.getReified<Model>()
-        val newItemLanded = newItem.getReified<Model>()
-        return oldItemLanded == newItemLanded
+        val oldReified = oldItem.getReified<Model>()
+        val newReified = newItem.getReified<Model>()
+        return oldReified == newReified
     }
 
     override fun areContentsTheSame(oldItem: Model, newItem: Model): Boolean {
-        val oldItemLanded = oldItem.getReified<Model>()
-        val newItemLanded = newItem.getReified<Model>()
-        return oldItemLanded.getMajorComponent() == newItemLanded.getMajorComponent()
+        val oldReified = oldItem.getReified<Model>()
+        val newReified = newItem.getReified<Model>()
+        return oldReified.getMajorComponent() == newReified.getMajorComponent()
     }
 }
 

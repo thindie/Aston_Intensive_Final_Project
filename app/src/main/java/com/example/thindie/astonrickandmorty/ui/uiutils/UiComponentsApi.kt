@@ -17,7 +17,6 @@ interface SearchEngineUser {
     fun getSearchAbleList(): List<SearchAble>
     fun setEngine(engine: SearchEngine)
 
-    fun notifyStatusChanged()
 }
 
 interface SearchEngineResultConsumer {

@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.episodes
 
+import com.example.thindie.astonrickandmorty.ui.basis.UiLinkPool
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.uiutils.MinorComponent
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
@@ -11,7 +12,8 @@ data class EpisodesUiModel(
     val episode: String,
     val id: Int,
     val name: String,
-    val url: String
+    val url: String,
+    val pool: UiLinkPool
 ) : SearchAble {
 
 

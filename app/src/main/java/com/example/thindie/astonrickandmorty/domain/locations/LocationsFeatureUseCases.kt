@@ -18,13 +18,17 @@ class LocationsFeatureUseCases @Inject constructor(private val baseRepository: L
         require(this::useCase.isInitialized) { " failed UseCase<T> initialisation in ${this::class.simpleName}" }
     }
 
-    override suspend fun getConcrete(id: Int): Result<LocationDomain> {
-        return useCase.fetchConcreteOrRetakeFromBase(id)
+    override suspend fun getConcrete(concretes: List<String>): Result<List<LocationDomain>> {
+        return useCase.fetchConcrete(concretes)
     }
 
-    override suspend fun getAll(filter: Filter<LocationDomain, LocationsFilter>): Result<List<LocationDomain>> {
-        return if (filter.isDefault) useCase.fetchAllOrRetakeFromBase()
-        else useCase.onSpecifiedFilter(filter) { useCase.fetchAllOrRetakeFromBase() }
+    override suspend fun getAll(
+        filter: Filter<LocationDomain, LocationsFilter>,
+        url: String?,
+        idS: List<String>
+    ): Result<List<LocationDomain>> {
+        return if (filter.isDefault) useCase.fetchAll(url, idS)
+        else useCase.onSpecifiedFilter(filter) { useCase.fetchAll(url, idS) }
     }
 
 }

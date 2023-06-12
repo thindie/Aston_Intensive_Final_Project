@@ -18,13 +18,17 @@ class EpisodesFeatureUseCases @Inject constructor(private val baseRepository: Ep
 
     }
 
-    override suspend fun getConcrete(id: Int): Result<EpisodeDomain> {
-        return useCase.fetchConcreteOrRetakeFromBase(id)
+    override suspend fun getConcrete(concretes: List<String>): Result<List<EpisodeDomain>> {
+        return useCase.fetchConcrete(concretes)
     }
 
-    override suspend fun getAll(filter: Filter<EpisodeDomain, EpisodeFilter>): Result<List<EpisodeDomain>> {
-        return if (filter.isDefault) useCase.fetchAllOrRetakeFromBase()
-        else useCase.onSpecifiedFilter(filter) { useCase.fetchAllOrRetakeFromBase() }
+    override suspend fun getAll(
+        filter: Filter<EpisodeDomain, EpisodeFilter>,
+        url: String?,
+        idS: List<String>
+    ): Result<List<EpisodeDomain>> {
+        return if (filter.isDefault) useCase.fetchAll(url, idS)
+        else useCase.onSpecifiedFilter(filter) { useCase.fetchAll(url, idS) }
     }
 
 }

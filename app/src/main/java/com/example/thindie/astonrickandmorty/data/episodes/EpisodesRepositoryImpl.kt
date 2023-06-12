@@ -1,10 +1,15 @@
 package com.example.thindie.astonrickandmorty.data.episodes
 
-import com.example.thindie.astonrickandmorty.data.getAndResult
+import com.example.thindie.astonrickandmorty.data.OutSourceLogic
+import com.example.thindie.astonrickandmorty.data.OutSourcedImplementationLogic
+import com.example.thindie.astonrickandmorty.data.episodesDbModelToDomain
+import com.example.thindie.astonrickandmorty.data.episodesDtoToDomain
+import com.example.thindie.astonrickandmorty.data.episodesResponseToDomain
 import com.example.thindie.astonrickandmorty.data.localsource.EpisodesDao
+import com.example.thindie.astonrickandmorty.data.localsource.entity.EpisodeDbModel
 import com.example.thindie.astonrickandmorty.data.remotesource.EpisodesApi
+import com.example.thindie.astonrickandmorty.data.remotesource.entity.episode.EpisodesDto
 import com.example.thindie.astonrickandmorty.data.toEpisodeDbModel
-import com.example.thindie.astonrickandmorty.data.toEpisodesDomain
 import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeDomain
 import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeRepository
 import javax.inject.Inject
@@ -13,41 +18,46 @@ import javax.inject.Inject
 class EpisodesRepositoryImpl @Inject constructor(
     private val api: EpisodesApi,
     private val dao: EpisodesDao
-) : EpisodeRepository {
-    override suspend fun getAll(): Result<List<EpisodeDomain>> {
-        return getAndResult {
-            api.getAllEpisodes()
-        }.mapCatching { rawDto ->
-            rawDto.results.map { episodesDto ->
-                episodesDto.toEpisodesDomain()
-            }
+) : EpisodeRepository, OutSourcedImplementationLogic<EpisodeDomain, EpisodesDto, EpisodeDbModel> {
+    private lateinit var outSourceLogic: OutSourceLogic<EpisodeDomain, EpisodesDto, EpisodeDbModel>
+
+    init {
+        OutSourceLogic.inject(this)
+    }
+
+    override suspend fun getAll(url: String?, idS: List<String>): Result<List<EpisodeDomain>> {
+        return outSourceLogic.fetchAllAsResponse(episodesResponseToDomain) {
+            if (url == null)
+                api.getAllEpisodes()
+            else api.getBy(url)
         }
-    }
-
-    override suspend fun getConcrete(id: Int): Result<EpisodeDomain> {
-        return getAndResult {
-            api.getSingleEpisode(id)
-        }.mapCatching { episodesDto ->
-            episodesDto.toEpisodesDomain()
-        }
-    }
-
-    override suspend fun retakeAll(): List<EpisodeDomain> {
-        return dao.getAllEpisodes()
-            .map { episodeDbModel ->
-                episodeDbModel.toEpisodesDomain()
+            .onFailure {
+                outSourceLogic.onFailedFetchMultiply(episodesDbModelToDomain)
+                { dao.getAllEpisodes() }
             }
+            .onSuccess { /*things -> store(things)*/ }
     }
 
-    override suspend fun retakeConcrete(id: Int): EpisodeDomain {
-        return dao.getConcreteEpisode(id)
-            .toEpisodesDomain()
+    override suspend fun getConcrete(concretes: List<String>): Result<List<EpisodeDomain>> {
+        return outSourceLogic.getConcrete(concretes, episodesDtoToDomain) { path ->
+            api.getMultiply(path)
+        }
+            .onFailure {
+                outSourceLogic.onFailedFetchConcrete(episodesDbModelToDomain)
+                { dao.getAllEpisodes() }
+            }
+            .onSuccess { }
     }
+
 
     override suspend fun store(things: List<EpisodeDomain>) {
         dao.upsertEpisodes(things.map { episodeDomain ->
             episodeDomain.toEpisodeDbModel()
         })
+    }
+
+    override fun setOutSource(logic: OutSourceLogic<EpisodeDomain, EpisodesDto, EpisodeDbModel>) {
+        outSourceLogic = logic
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.locations
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapLocationDomain
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
@@ -46,9 +48,32 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
         }
     }
 
-    fun clickConcrete(id: Int) {
+    fun onReactScrollDown() {
         viewModelScope.launch {
-            outSource.fetchConcrete(id, mapLocationDomain)
+            outSource.fetchAll(mapLocationDomain, url = adapter.currentList.last().pool.next) {
+                Log.d("SERVICE_TAG", adapter.currentList.last().pool.next)
+                onApplyFilter()
+            }
+        }
+    }
+
+    fun onReactScrollUp() {
+        viewModelScope.launch {
+            outSource.fetchAll(mapLocationDomain, url = adapter.currentList.last().pool.prev) {
+                onApplyFilter()
+            }
+        }
+    }
+
+    fun onClickConcrete(id: Int, isTargetSingle: Boolean = true) {
+        viewModelScope.launch {
+            outSource.fetchConcrete(listOf(id.toString()), mapLocationDomain, isTargetSingle)
+        }
+    }
+
+    fun onConcreteScreenObtainList(links: List<String>, isTargetSingle: Boolean = false) {
+        viewModelScope.launch {
+            outSource.fetchConcrete(links, mapLocationDomain, isTargetSingle)
         }
     }
 
@@ -72,22 +97,21 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
         private const val BLANK_STRING = ""
     }
 
-    private lateinit var _adapter: RecyclerViewAdapter<LocationsUiModel, UiHolder>
+    private lateinit var _adapter: RecyclerViewAdapterMediatorScroll<LocationsUiModel, UiHolder>
 
-    override val adapter: RecyclerViewAdapter<LocationsUiModel, UiHolder>
+    override val adapter: RecyclerViewAdapterMediatorScroll<LocationsUiModel, UiHolder>
         get() = _adapter
 
-    override fun   observe(eventStateListener: EventMediator<Scroll>) {
+    override fun observe(eventStateListener: EventMediator<Scroll>) {
         eventStateListener
-            .eventFlow
-            .onEach { scroll -> if(eventStateListener.isActive()) {
-                outSource.onScrollEvent(scroll) { onClickedNavigationButton() }
-            } }
-            .launchIn(viewModelScope)
+            .event = { scroll -> onReactScrollDown()  }
     }
 
 
-    override fun setAdapter(adapter: RecyclerViewAdapter<LocationsUiModel, UiHolder>) {
-        if (!this::_adapter.isInitialized) _adapter = adapter
+    override fun <Adapter : RecyclerViewAdapter<LocationsUiModel, UiHolder>> setAdapter(adapter: Adapter) {
+        if (!this::_adapter.isInitialized) {
+
+            _adapter = adapter as RecyclerViewAdapterMediatorScroll<LocationsUiModel, UiHolder>
+        }
     }
 }

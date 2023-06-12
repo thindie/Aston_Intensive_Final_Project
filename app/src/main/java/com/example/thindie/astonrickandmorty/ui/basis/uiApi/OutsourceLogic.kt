@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.basis.uiApi
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,10 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
 
 
     private val _observable: MutableLiveData<UiState> = MutableLiveData()
+    private var _scrollDispatcher: ScrollDispatcher =
+        ScrollDispatcher.Interrupted
+    val scroll
+    get() = _scrollDispatcher
 
     val observable: LiveData<UiState>
         get() = _observable
@@ -34,23 +39,44 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
         }
     }
 
+
+
     suspend fun fetchAll(
         mapper: (Domain) -> SearchAble,
+        url: String? = null,
+        idS: List<String> = emptyList(),
         filterBy: () -> Filter<Domain, Filters>
-    ) {
-        fetchSome(mapper) { provider.getAll(filter = filterBy()) }
+    )    {
+        Log.d("SERVICE_TAG", url.toString())
+        fetchSome(mapper) { provider.getAll(filter = filterBy(), url = url, idS = idS) }
     }
 
 
-    suspend fun fetchConcrete(id: Int, mapper: Domain.() -> SearchAble) {
+    suspend fun fetchConcrete(
+        concretes: List<String>,
+        mapper: Domain.() -> SearchAble,
+        isTargetSingle: Boolean
+    ) {
+        if (isTargetSingle) {
+            provider.getConcrete(concretes)
+                .onSuccess { T ->
+                    _scrollDispatcher = ScrollDispatcher.Interrupted
+                    _observable.value =
+                        UiState.SuccessFetchResultConcrete(T.first().mapper())
+                }.onFailure { error ->
+                    _observable.value = UiState.BadResult(error)
+                }
+        } else {
+            provider.getConcrete(concretes)
+                .onSuccess { T ->
+                    _scrollDispatcher = ScrollDispatcher.Interrupted
+                    _observable.value =
+                        UiState.SuccessFetchResult(T.map(mapper))
+                }.onFailure { error ->
+                    _observable.value = UiState.BadResult(error)
+                }
+        }
 
-        provider.getConcrete(id)
-            .onSuccess { T ->
-                _observable.value =
-                    UiState.SuccessFetchResultConcrete(T.mapper())
-            }.onFailure { error ->
-                _observable.value = UiState.BadResult(error)
-            }
 
     }
 
@@ -61,29 +87,31 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
             _observable.value =
                 UiState.BadResultWithMessage(R.string.error_message_noting_found)
         }
+        _scrollDispatcher = ScrollDispatcher.Interrupted
+        //todo
         _observable.value = UiState.SuccessFetchResult(resultList)
 
     }
 
 
-    private fun Result<List<Domain>>.onFetch(foo: (Domain) -> SearchAble) {
+    private fun Result<List<Domain>>.onResult(mapper: (Domain) -> SearchAble) {
         onSuccess { fetched ->
-            val toMap = fetched.map {
-                foo(it)
+            val searchAbleList = fetched.map { domain ->
+                mapper(domain)
             }
-            _observable.value = UiState.SuccessFetchResult(toMap)
+            _scrollDispatcher = ScrollDispatcher.Listening
+            _observable.value = UiState.SuccessFetchResult(searchAbleList)
         }.onFailure { failed ->
             _observable.value = UiState.BadResult(failed)
         }
     }
 
     private suspend fun fetchSome(
-        bar: (Domain) -> SearchAble,
-        foo: suspend () -> Result<List<Domain>>
-    ) {
-
-        foo().onFetch(bar)
-
+        mapper: (Domain) -> SearchAble,
+        fetchedResult: suspend () -> Result<List<Domain>>
+    )    {
+        Log.d("SERVICE_TAG", "here1")
+        fetchedResult().onResult(mapper)
     }
 
 
@@ -92,7 +120,7 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
             val list: List<UiModel>
         ) : UiState()
 
-        data class SuccessFetchResultConcrete<UiModel : SearchAble>(val t: UiModel) :
+        data class SuccessFetchResultConcrete<UiModel : SearchAble>(val fetchedUnit: UiModel) :
             UiState()
 
         data class BadResult(val error: Throwable) : UiState()
@@ -102,8 +130,11 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
         data class BadResultWithMessage(
             @StringRes val id: Int
         ) : UiState()
+    }
 
-
+    sealed class ScrollDispatcher {
+        object Listening : ScrollDispatcher()
+        object Interrupted : ScrollDispatcher()
     }
 
     companion object {

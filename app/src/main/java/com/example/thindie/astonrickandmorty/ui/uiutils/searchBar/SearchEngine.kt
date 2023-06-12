@@ -16,7 +16,6 @@ class SearchEngine private constructor(private val engineUser: SearchEngineUser)
                 observable
                     .text
                     .addTextChangedListener { changingText ->
-                            engineUser.notifyStatusChanged()
                         engineUser.getSearchingConsumer()
                             .onSearchResult(filterByCriteria(changingText.toString()))
                     }
@@ -24,12 +23,10 @@ class SearchEngine private constructor(private val engineUser: SearchEngineUser)
             }
             is SearchObservable.MutableStateHolder -> {
                 observable.state.observe(observable.lifecycleOwner) { criteria ->
-                    engineUser.notifyStatusChanged()
                     engineUser.getSearchingConsumer().onSearchResult(filterByCriteria(criteria))
                 }
             }
         }
-        Log.d("SERVICE_TAG", "SEARCH AT FINISH")
     }
 
     private fun filterByCriteria(string: String): List<SearchAble> {
