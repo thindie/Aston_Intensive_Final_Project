@@ -1,13 +1,18 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonageConcreteBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseConcreteFragment
 import com.example.thindie.astonrickandmorty.ui.basis.ConcreteFragmentTools
+import com.example.thindie.astonrickandmorty.ui.basis.FOC
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
 import com.example.thindie.astonrickandmorty.ui.episodes.EpisodesFragment
@@ -18,10 +23,16 @@ class PersonageConcreteFragment : BaseConcreteFragment(), ConcreteFragmentTools 
 
     private val viewModel: PersonagesViewModel by lazy { getVM(this) }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val id = requireNotNull(arguments).getInt(CONCRETE_ID)
+        viewModel.onClickConcrete(id)
+    }
 
     private var _binding: FragmentPersonageConcreteBinding? = null
     private val binding get() = _binding!!
     override fun actAsAParentFragment() {
+
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is OutsourceLogic.UiState.SuccessFetchResultConcrete<*> -> {
@@ -30,7 +41,11 @@ class PersonageConcreteFragment : BaseConcreteFragment(), ConcreteFragmentTools 
                     initialiseParent(stateConcrete)
                     initialiseChild(isChild = true)
                 }
-                else -> {}
+                is OutsourceLogic.UiState.BadResult -> {
+                   FOC(state)
+                }
+                else -> {
+                }
             }
         }
     }
@@ -70,5 +85,14 @@ class PersonageConcreteFragment : BaseConcreteFragment(), ConcreteFragmentTools 
             .beginTransaction()
             .replace(R.id.personage_concrete_fragment_container, EpisodesFragment(isChild))
             .commit()
+    }
+
+    companion object {
+        private const val CONCRETE_ID = "ID"
+        operator fun invoke(id: Int): PersonageConcreteFragment {
+            return PersonageConcreteFragment().apply {
+               arguments = bundleOf(CONCRETE_ID to id)
+            }
+        }
     }
 }

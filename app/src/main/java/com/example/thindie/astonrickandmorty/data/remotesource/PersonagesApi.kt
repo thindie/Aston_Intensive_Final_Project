@@ -11,11 +11,11 @@ import retrofit2.http.Url
 interface PersonagesApi {
 
 
-    @GET(ApiParams.CHARACTER)
+    @GET(CHARACTER)
     suspend fun getAllCharacters(): PersonageResponse
 
 
-    @GET(ApiParams.CHARACTER_ID)
+    @GET(CHARACTER_ID)
     suspend fun getSingleCharacter(
         @Path("id") characterId: Int
     ): PersonageDto
@@ -23,12 +23,20 @@ interface PersonagesApi {
     @GET
     suspend fun getBy(@Url url: String):  PersonageResponse
 
-    @GET(ApiParams.EPISODE_ID)
+    @GET(CHARACTER_ID)
     suspend fun getMultiply(
         @Path(
             "id",
-            encoded = true
-        ) episodesIds: String
+            encoded = false
+        ) id: Int
     ):  List<PersonageDto>
 
 }
+
+private const val ENDPOINT = "https://rickandmortyapi.com/api/"
+private const val CHARACTER = "${ENDPOINT}character"
+private const val LOCATION = "${ENDPOINT}location"
+private const val EPISODE = "${ENDPOINT}episode"
+private const val EPISODE_ID = "${EPISODE}/{id},"
+private const val CHARACTER_ID = "${CHARACTER}/{id},"
+private const val LOCATION_ID = "${LOCATION}/{id},"

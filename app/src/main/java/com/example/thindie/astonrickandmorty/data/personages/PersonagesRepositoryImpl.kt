@@ -43,7 +43,7 @@ class PersonagesRepositoryImpl @Inject constructor(
 
     override suspend fun getConcrete(concretes: List<String>): Result<List<PersonageDomain>> {
         return outSourceLogic.getConcrete(concretes, personagesDtoToDomain) { path ->
-            api.getMultiply(path)
+            api.getMultiply(path.toInt())
         }
             .onFailure {
                 outSourceLogic.onFailedFetchConcrete(personagesDbModelToDomain)

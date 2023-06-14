@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentEpisodesBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
+import com.example.thindie.astonrickandmorty.ui.basis.FOC
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
@@ -111,6 +113,8 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
                 is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
                     viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
                 }
+                is OutsourceLogic.UiState.BadResult -> {
+                    FOC(state)}
                 else -> {}
             }
         }

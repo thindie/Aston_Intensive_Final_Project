@@ -30,6 +30,6 @@ interface EpisodesApi {
         @Path(
             "id",
             encoded = true
-        ) episodesIds: String
+        ) id: Int
     ): List<EpisodesDto>
 }

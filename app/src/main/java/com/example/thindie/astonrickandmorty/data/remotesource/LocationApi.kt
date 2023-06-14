@@ -30,7 +30,7 @@ interface LocationApi {
         @Path(
             "id",
             encoded = true
-        ) episodesIds: String
+        ) id: Int
     ): List<LocationDto>
 }
 

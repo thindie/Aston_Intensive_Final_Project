@@ -2,13 +2,16 @@ package com.example.thindie.astonrickandmorty.ui.personage
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonagesBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
+import com.example.thindie.astonrickandmorty.ui.basis.FOC
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
@@ -82,7 +85,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
             viewModel.setAdapter(RecyclerViewAdapterMediatorScroll(
                 viewHolderIdSupplier = getHolderIdSupplier(),
                 onClickedViewHolder = {
-                    viewModel.onClickConcrete(it.id)
+                    fragmentsRouter.router.navigate(PersonageConcreteFragment(it.id))
                      }))
             _recyclerView.adapter = viewModel.adapter
             if (_recyclerView.adapter is EventMediator<*>) {
@@ -124,8 +127,10 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
                     viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
                 }
                 is OutsourceLogic.UiState.SuccessFetchResultConcrete<*> -> {
-                    fragmentsRouter.router.navigate(PersonageConcreteFragment())
+
+
                 }
+                is OutsourceLogic.UiState.BadResult -> { FOC(state) }
                 else -> {}
             }
 

@@ -57,14 +57,15 @@ class OutSourceLogic<Domain, Remote, Local> {
     suspend fun getConcrete(
         concretes: List<String>,
         mapper: (Remote) -> Domain,
-        fetcher: suspend (String) -> List<Remote>
+        fetcher: suspend (Int) -> List<Remote>
     ): Result<List<Domain>> {
-        val path = concretes
+       /* val path = concretes
             .map { concrete ->
-                concrete.last()
-            }.commaQueryEncodedBuilder()
+                concrete.last().toString()
+            }
+*/
         return kotlin
-            .runCatching { fetcher(path) }
+            .runCatching { fetcher(4) }
             .mapCatching { list -> list.map(mapper) }
     }
 

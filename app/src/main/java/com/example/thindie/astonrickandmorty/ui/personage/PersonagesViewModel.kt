@@ -20,6 +20,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvider) : ViewModel(),
@@ -96,6 +97,11 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
 
     override fun setOutSource(outsourceLogic: OutsourceLogic<PersonageDomain, PersonageFilter>) {
         if (!this::outSource.isInitialized) outSource = outsourceLogic
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.cancel()
     }
 
     companion object {
