@@ -50,7 +50,7 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
         }
     }
 
-    fun onReactScrollDown(){
+    private fun onReactScrollDown(){
         viewModelScope.launch {
             outSource.fetchAll(mapEpisodesDomain, url = adapter.currentList.last().pool.next){
                 onApplyFilter()
@@ -58,7 +58,7 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
         }
     }
 
-    fun onReactScrollUp(){
+    private fun onReactScrollUp(){
         viewModelScope.launch {
             outSource.fetchAll(mapEpisodesDomain, url = adapter.currentList.last().pool.prev){
                 onApplyFilter()
@@ -107,10 +107,19 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
     }
 
     override fun observe(eventStateListener: EventMediator<Scroll>) {
-            eventStateListener
-                 .event = {
-                    scroll ->  onReactScrollDown()
+        eventStateListener
+            .event = { scrollEvent ->
+            when (scrollEvent) {
+                Scroll.TOP -> {
+                    onReactScrollUp()
+                }
+                Scroll.STILL -> {}
+                Scroll.BOTTOM -> {
+                    onReactScrollDown()
+                }
             }
+        }
+
     }
 
     companion object {

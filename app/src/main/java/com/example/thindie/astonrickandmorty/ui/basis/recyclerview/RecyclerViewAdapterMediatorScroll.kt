@@ -18,8 +18,8 @@ constructor(viewHolderIdSupplier: ViewHolderIdSupplier) :
     override var event: ((Scroll) ->  Unit)? = null
 
 
-    override fun onEvent() {
-         event?.invoke(Scroll.BOTTOM)
+    override fun onEvent(t: Scroll) {
+         event?.invoke(t)
     }
 
 }

@@ -1,7 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewA
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.ScrollListener
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesSearchAbleAdaptedRecycleViewAdapter
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
@@ -35,7 +35,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
         viewModel.onClickedNavigationButton()
         searchEngine.observeSearchCriteria()
         setRecyclerView()
-         observeRecyclerView()
+        observeRecyclerView()
         viewModel.viewState.observe(viewLifecycleOwner) {
             when (it) {
                 is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
@@ -73,26 +73,14 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
     }
 
     override fun observeRecyclerView() {
-            viewModel.observe(listener)
-            recyclerView.addOnScrollListener(
-                object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-
-                        if (!this@PersonagesFragment.recyclerView.canScrollVertically(1)) {
-                            listener.onEvent()
-                        }
-                        if (!this@PersonagesFragment.recyclerView.canScrollVertically(-1)) {
-                            listener.onEvent()
-                        }
-                    }
-
-                }
-            )
+        viewModel.observe(listener)
+        recyclerView.addOnScrollListener(
+            ScrollListener(listener)
+        )
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("SERVICE_TAG", "ON_STOP")
         recyclerView.clearOnScrollListeners()
     }
 

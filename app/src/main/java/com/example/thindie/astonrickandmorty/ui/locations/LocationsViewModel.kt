@@ -48,7 +48,7 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
         }
     }
 
-    fun onReactScrollDown() {
+    private fun onReactScrollDown() {
         viewModelScope.launch {
             outSource.fetchAll(mapLocationDomain, url = adapter.currentList.last().pool.next) {
                 Log.d("SERVICE_TAG", adapter.currentList.last().pool.next)
@@ -57,7 +57,7 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
         }
     }
 
-    fun onReactScrollUp() {
+    private fun onReactScrollUp() {
         viewModelScope.launch {
             outSource.fetchAll(mapLocationDomain, url = adapter.currentList.last().pool.prev) {
                 onApplyFilter()
@@ -104,7 +104,18 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
 
     override fun observe(eventStateListener: EventMediator<Scroll>) {
         eventStateListener
-            .event = { scroll -> onReactScrollDown()  }
+            .event = { scrollEvent ->
+            when (scrollEvent) {
+                Scroll.TOP -> {
+                    onReactScrollUp()
+                }
+                Scroll.STILL -> {}
+                Scroll.BOTTOM -> {
+                    onReactScrollDown()
+                }
+            }
+        }
+
     }
 
 

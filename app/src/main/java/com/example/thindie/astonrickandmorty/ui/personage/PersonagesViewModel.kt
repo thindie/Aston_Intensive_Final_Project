@@ -19,8 +19,6 @@ import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvider) : ViewModel(),
@@ -45,7 +43,7 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
         }
     }
 
-    fun onReactScrollDown() {
+    private fun onReactScrollDown() {
         if (outSource.scroll is OutsourceLogic.ScrollDispatcher.Listening)
             viewModelScope.launch {
 
@@ -59,7 +57,7 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
 
     }
 
-    fun onReactScrollUp() {
+    private fun onReactScrollUp() {
         viewModelScope.launch {
             outSource.fetchAll(mapPersonageDomain, url = adapter.currentList.last().pool.prev) {
                 onApplyFilter()
@@ -108,8 +106,16 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
 
     override fun observe(eventStateListener: EventMediator<Scroll>) {
         eventStateListener
-            .event = {
-                scroll ->  onReactScrollDown()
+            .event = { scrollEvent ->
+            when (scrollEvent) {
+                Scroll.TOP -> {
+                    onReactScrollUp()
+                }
+                Scroll.STILL -> {}
+                Scroll.BOTTOM -> {
+                    onReactScrollDown()
+                }
+            }
         }
 
     }

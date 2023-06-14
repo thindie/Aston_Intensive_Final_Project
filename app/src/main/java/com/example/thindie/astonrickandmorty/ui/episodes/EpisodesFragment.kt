@@ -15,6 +15,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewA
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.ScrollListener
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesSearchAbleAdaptedRecycleViewAdapter
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
@@ -75,18 +76,17 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        recyclerView.clearOnScrollListeners()
+    }
+
 
     override fun observeRecyclerView() {
 
             viewModel.observe(listener)
             recyclerView.addOnScrollListener(
-                object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        if (!this@EpisodesFragment.recyclerView.canScrollVertically(1)) {
-                            listener.onEvent()
-                        }
-                    }
-                }
+                ScrollListener(listener)
             )
 
     }
