@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentEpisodesBinding
@@ -35,12 +35,17 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
     private val viewModel: EpisodesViewModel by lazy { getVM(this) }
     private lateinit var listener: EventMediator<Scroll>
 
+    private lateinit var childPropertyEpisodesList: List<String>
 
     private var isParent: Boolean = true
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            isParent = requireArguments().getBoolean(IS_PARENT)
+            childPropertyEpisodesList =
+                requireNotNull(arguments) {
+                    FOC(getString(R.string.error_fragment_havent_proper_arguments))
+                }.getStringArrayList(EPISODES)!!
+            isParent = false
         } catch (e: Exception) { /* ignore */
         }
     }
@@ -114,7 +119,8 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
                     viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
                 }
                 is OutsourceLogic.UiState.BadResult -> {
-                    FOC(state)}
+                    FOC(state)
+                }
                 else -> {}
             }
         }
@@ -135,7 +141,7 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
 
     override fun onPause() {
         super.onPause()
-        recyclerView.clearOnScrollListeners()
+        if (this::_recyclerView.isInitialized) recyclerView.clearOnScrollListeners()
     }
 
     override fun onDestroyView() {
@@ -153,12 +159,15 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
 
     companion object {
         private const val IS_PARENT = "isParent"
-        operator fun invoke(isParent: Boolean = true): EpisodesFragment {
-            val bundle = Bundle().apply {
-                putBoolean(IS_PARENT, isParent)
-            }
+        private const val EPISODES = "episodes"
+        operator fun invoke(
+            isParent: Boolean = true,
+            episodesLinks: List<String>
+        ): EpisodesFragment {
             return EpisodesFragment().apply {
-                arguments = bundle
+                arguments = bundleOf(
+                    IS_PARENT to isParent,
+                    EPISODES to episodesLinks)
             }
         }
     }

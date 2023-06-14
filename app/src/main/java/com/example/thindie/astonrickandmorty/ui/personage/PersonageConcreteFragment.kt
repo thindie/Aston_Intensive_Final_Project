@@ -2,11 +2,9 @@ package com.example.thindie.astonrickandmorty.ui.personage
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonageConcreteBinding
@@ -39,10 +37,10 @@ class PersonageConcreteFragment : BaseConcreteFragment(), ConcreteFragmentTools 
                     val stateConcrete = state.fetchedUnit.toUiEntity<PersonagesUiModel>()
                     val episodes = stateConcrete.episode
                     initialiseParent(stateConcrete)
-                    initialiseChild(isChild = true)
+                    initialiseChild(episodes)
                 }
                 is OutsourceLogic.UiState.BadResult -> {
-                   FOC(state)
+                    FOC(state)
                 }
                 else -> {
                 }
@@ -80,10 +78,13 @@ class PersonageConcreteFragment : BaseConcreteFragment(), ConcreteFragmentTools 
 
     }
 
-    override fun initialiseChild(isChild: Boolean) {
+    override fun initialiseChild(arguments: Any) {
         childFragmentManager
             .beginTransaction()
-            .replace(R.id.personage_concrete_fragment_container, EpisodesFragment(isChild))
+            .replace(
+                R.id.personage_concrete_fragment_container,
+                EpisodesFragment.invoke(true, (arguments as? List<String>).orEmpty())
+            )
             .commit()
     }
 
@@ -91,7 +92,7 @@ class PersonageConcreteFragment : BaseConcreteFragment(), ConcreteFragmentTools 
         private const val CONCRETE_ID = "ID"
         operator fun invoke(id: Int): PersonageConcreteFragment {
             return PersonageConcreteFragment().apply {
-               arguments = bundleOf(CONCRETE_ID to id)
+                arguments = bundleOf(CONCRETE_ID to id)
             }
         }
     }

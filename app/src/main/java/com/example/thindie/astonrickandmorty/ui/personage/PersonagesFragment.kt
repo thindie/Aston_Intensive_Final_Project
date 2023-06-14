@@ -108,7 +108,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
 
     override fun onPause() {
         super.onPause()
-        recyclerView.clearOnScrollListeners()
+        if (this::_recyclerView.isInitialized) recyclerView.clearOnScrollListeners()
     }
 
 

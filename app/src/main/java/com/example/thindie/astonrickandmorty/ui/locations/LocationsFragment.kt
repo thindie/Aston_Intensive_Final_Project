@@ -121,7 +121,7 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
 
     override fun onPause() {
         super.onPause()
-        recyclerView.clearOnScrollListeners()
+        if (this::_recyclerView.isInitialized) recyclerView.clearOnScrollListeners()
     }
 
 
