@@ -10,6 +10,7 @@ import com.example.thindie.astonrickandmorty.data.personagesDtoToDomain
 import com.example.thindie.astonrickandmorty.data.personagesResponseToDomain
 import com.example.thindie.astonrickandmorty.data.remotesource.PersonagesApi
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.personage.PersonageDto
+import com.example.thindie.astonrickandmorty.data.remotesource.util.commaQueryEncodedBuilder
 import com.example.thindie.astonrickandmorty.data.toPersonageDbModel
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageRepository
@@ -59,6 +60,31 @@ class PersonagesRepositoryImpl @Inject constructor(
 
     override fun setOutSource(logic: OutSourceLogic<PersonageDomain, PersonageDto, PersonageDbModel>) {
         outSourceLogic = logic
+    }
+
+    private fun List<String>.buildUrl(): String {
+        if (size > 1)
+            map { fullLinkWithIdEnded ->
+                fullLinkWithIdEnded.substringAfterLast("/")
+            }
+                .map { idWith ->
+                    idWith.removeSurrounding("/")
+                }.apply {
+                    return CHARACTER
+                        .plus("/")
+                        .plus(commaQueryEncodedBuilder(this))
+                }
+       return first()
+    }
+
+    companion object {
+        private const val ENDPOINT = "https://rickandmortyapi.com/api/"
+        private const val CHARACTER = "${ENDPOINT}character"
+        private const val LOCATION = "${ENDPOINT}location"
+        private const val EPISODE = "${ENDPOINT}episode"
+        const val EPISODE_ID = "${EPISODE}/{id}"
+        const val CHARACTER_ID = "${CHARACTER}/{id}"
+        const val LOCATION_ID = "${LOCATION}/{id}"
     }
 
 

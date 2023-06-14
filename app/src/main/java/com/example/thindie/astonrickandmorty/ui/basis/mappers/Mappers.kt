@@ -6,7 +6,7 @@ import com.example.thindie.astonrickandmorty.domain.locations.LocationDomain
 import com.example.thindie.astonrickandmorty.domain.personages.Location
 import com.example.thindie.astonrickandmorty.domain.personages.Origin
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
-import com.example.thindie.astonrickandmorty.ui.basis.UiLinkPool
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UiLinkPool
 import com.example.thindie.astonrickandmorty.ui.episodes.EpisodesUiModel
 import com.example.thindie.astonrickandmorty.ui.locations.LocationsUiModel
 import com.example.thindie.astonrickandmorty.ui.personage.LocationUi

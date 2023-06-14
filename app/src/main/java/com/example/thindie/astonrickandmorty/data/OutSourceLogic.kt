@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.data
 
+import android.util.Log
 import com.example.thindie.astonrickandmorty.data.remotesource.util.commaQueryEncodedBuilder
 
 class OutSourceLogic<Domain, Remote, Local> {

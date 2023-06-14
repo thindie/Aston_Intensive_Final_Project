@@ -1,5 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -66,6 +67,7 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
     }
 
     fun onClickConcrete(id: Int, isTargetSingle: Boolean = true) {
+        Log.d("SERVICE_TAG", "VM_ON_CLICK_CONCRETE")
         viewModelScope.launch {
             outSource.fetchConcrete(listOf(id.toString()), mapPersonageDomain, isTargetSingle)
         }

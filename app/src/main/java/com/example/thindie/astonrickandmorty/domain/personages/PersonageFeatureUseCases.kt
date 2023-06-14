@@ -22,6 +22,7 @@ class PersonageFeatureUseCases @Inject constructor(private val baseRepository: P
 
 
     override suspend fun getConcrete(concretes: List<String>): Result<List<PersonageDomain>> {
+        Log.d("SERVICE_TAG", "ON_PERSONAGE_USECASE")
         return useCase.fetchConcrete(concretes)
     }
 

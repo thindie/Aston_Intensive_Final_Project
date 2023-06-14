@@ -81,7 +81,9 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
                 binding.recyclerViewGridParent.recyclerViewGrid
             viewModel.setAdapter(RecyclerViewAdapterMediatorScroll(
                 viewHolderIdSupplier = getHolderIdSupplier(),
-                onClickedViewHolder = { fragmentsRouter.router.navigate(PersonageConcreteFragment()) }))
+                onClickedViewHolder = {
+                    viewModel.onClickConcrete(it.id)
+                     }))
             _recyclerView.adapter = viewModel.adapter
             if (_recyclerView.adapter is EventMediator<*>) {
                 listener = _recyclerView.adapter as EventMediator<Scroll>
@@ -120,6 +122,9 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
             when (state) {
                 is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
                     viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
+                }
+                is OutsourceLogic.UiState.SuccessFetchResultConcrete<*> -> {
+                    fragmentsRouter.router.navigate(PersonageConcreteFragment())
                 }
                 else -> {}
             }

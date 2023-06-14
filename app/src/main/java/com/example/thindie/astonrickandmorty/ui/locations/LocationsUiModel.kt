@@ -1,7 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.locations
 
-import com.example.thindie.astonrickandmorty.ui.basis.UiLinkPool
-import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UiLinkPool
 import com.example.thindie.astonrickandmorty.ui.uiutils.MinorComponent
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 

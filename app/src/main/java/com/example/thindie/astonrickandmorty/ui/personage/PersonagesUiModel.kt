@@ -1,6 +1,6 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
-import com.example.thindie.astonrickandmorty.ui.basis.UiLinkPool
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UiLinkPool
 import com.example.thindie.astonrickandmorty.ui.uiutils.MinorComponent
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 
