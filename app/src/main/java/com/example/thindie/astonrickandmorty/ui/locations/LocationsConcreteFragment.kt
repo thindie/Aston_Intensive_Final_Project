@@ -17,6 +17,10 @@ class LocationsConcreteFragment : BaseConcreteFragment()    {
 
     private var _binding: FragmentLocationConcreteBinding? = null
     private val binding get() = _binding!!
+    override fun actAsAParentFragment() {
+
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,

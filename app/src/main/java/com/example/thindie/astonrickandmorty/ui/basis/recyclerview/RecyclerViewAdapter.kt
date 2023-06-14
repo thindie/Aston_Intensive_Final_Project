@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 
 open class RecyclerViewAdapter<Model : SearchAble, ViewHolder>
-constructor(private val viewHolderIdSupplier: ViewHolderIdSupplier) :
+constructor(
+    private val viewHolderIdSupplier: ViewHolderIdSupplier,
+    private val onClickedViewHolder: (Model) -> Unit
+) :
     ListAdapter<Model, ViewHolder>(RecyclerDiffUtilCallBack<Model>())
 
         where ViewHolder : RecyclerView.ViewHolder, ViewHolder : SearchAbleAdapted {
@@ -40,6 +43,9 @@ constructor(private val viewHolderIdSupplier: ViewHolderIdSupplier) :
                 viewHolderIdSupplier.imageChild,
                 viewHolderIdSupplier.expandedChild
             )
+        }
+        holder.itemView.setOnClickListener{
+            onClickedViewHolder(item)
         }
     }
 }

@@ -16,6 +16,9 @@ import javax.inject.Inject
 
 abstract class BaseFragment : Fragment(), SearchEngineUser {
 
+    abstract fun actAsAParentFragment()
+    abstract fun actAsAChildFragment()
+
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -61,6 +64,5 @@ abstract class BaseFragment : Fragment(), SearchEngineUser {
     protected inline fun <reified T : ViewModel> getVM(owner: ViewModelStoreOwner): T {
         return ViewModelProvider(owner, factory)[T::class.java]
     }
-
 }
 

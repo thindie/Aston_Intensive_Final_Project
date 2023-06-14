@@ -16,6 +16,9 @@ class EpisodesConcreteFragment : BaseConcreteFragment() {
 
     private var _binding: FragmentEpisodeConcreteBinding? = null
     private val binding get() = _binding!!
+    override fun actAsAParentFragment() {
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

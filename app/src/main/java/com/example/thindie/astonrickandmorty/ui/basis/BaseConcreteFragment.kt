@@ -17,4 +17,8 @@ abstract class BaseConcreteFragment : BaseFragment() {
         return emptyList()
     }
 
+    override fun actAsAChildFragment() {
+        error("stub")
+    }
+
 }

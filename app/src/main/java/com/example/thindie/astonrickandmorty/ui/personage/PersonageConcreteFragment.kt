@@ -12,12 +12,16 @@ import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdS
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesSearchAbleAdaptedRecycleViewAdapter
 
 class PersonageConcreteFragment : BaseConcreteFragment()    {
+
+
     val viewModel: PersonagesViewModel by lazy { getVM(this) }
 
 
     private var _binding: FragmentPersonageConcreteBinding? = null
     private val binding get() = _binding!!
+    override fun actAsAParentFragment() {
 
+    }
 
 
     override fun onCreateView(

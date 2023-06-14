@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class RecyclerViewAdapterMediatorScroll<Model : SearchAble, ViewHolder>
-constructor(viewHolderIdSupplier: ViewHolderIdSupplier) :
-    RecyclerViewAdapter<Model, ViewHolder>(viewHolderIdSupplier),
+constructor(viewHolderIdSupplier: ViewHolderIdSupplier, onClickedViewHolder: (Model) -> Unit) :
+    RecyclerViewAdapter<Model, ViewHolder>(viewHolderIdSupplier, onClickedViewHolder),
     EventMediator<Scroll>
         where ViewHolder : RecyclerView.ViewHolder, ViewHolder : SearchAbleAdapted {
 
