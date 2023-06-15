@@ -14,6 +14,7 @@ import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
 import com.example.thindie.astonrickandmorty.ui.basis.FOC
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecycleViewed
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
@@ -24,7 +25,7 @@ import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 
 
-class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter {
+class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter, RecycleViewed {
 
     private lateinit var _recyclerView: RecyclerView
     override val recyclerView: RecyclerView

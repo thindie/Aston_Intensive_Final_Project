@@ -8,4 +8,5 @@
     <string name="error_fragment_havent_proper_arguments">something are loss, can\'t show some</string>
     <string name="message_internet_trouble">looks like trouble with internet</string>
     <string name="message_error_something_wrong">looks like something wrong</string>
+    <string name="personage_avatar">personage_avatar</string>
 </resources>
