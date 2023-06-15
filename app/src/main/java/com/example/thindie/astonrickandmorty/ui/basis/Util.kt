@@ -15,6 +15,10 @@ fun Fragment.FOC(e: OutsourceLogic.UiState.BadResult) {
         CancellationException::class -> {
             W { "cancellation coroutine" }
         }
+
+        java.net.UnknownHostException::class -> {
+
+        }
         else -> {
             Toast.makeText(
                 requireActivity(),

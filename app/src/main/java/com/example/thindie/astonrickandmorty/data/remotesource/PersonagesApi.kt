@@ -20,6 +20,11 @@ interface PersonagesApi {
         @Path("id") characterId: Int
     ): PersonageDto
 
+    @GET(CHARACTER_ID)
+    suspend fun getMultiCharacter(
+        @Path("id", encoded = true) characterId: String
+    ): List<PersonageDto>
+
     @GET
     suspend fun getBy(@Url url: String): PersonageResponse
 

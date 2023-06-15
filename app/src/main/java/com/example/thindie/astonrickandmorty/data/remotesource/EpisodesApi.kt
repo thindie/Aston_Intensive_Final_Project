@@ -15,6 +15,10 @@ interface EpisodesApi {
     @GET(EPISODE)
     suspend fun getAllEpisodes(): EpisodesResponse
 
+    @GET(EPISODE_ID)
+    suspend fun getMultiEpisode(
+        @Path("id", encoded = true) characterId: String
+    ): List<EpisodesDto>
 
     @GET(EPISODE_ID)
     suspend fun getSingleEpisode(

@@ -1,6 +1,5 @@
 package com.example.thindie.astonrickandmorty.data.personages
 
-import com.example.thindie.astonrickandmorty.W
 import com.example.thindie.astonrickandmorty.data.OutSourceLogic
 import com.example.thindie.astonrickandmorty.data.OutSourcedImplementationLogic
 import com.example.thindie.astonrickandmorty.data.localsource.PersonagesDao
@@ -45,29 +44,32 @@ class PersonagesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPoolOf(concretes: List<String>): Result<List<PersonageDomain>> {
-        return outSourceLogic.fetchAllAsDto(
-            mapper = personagesDtoToDomain,
-            fetcher = { param -> api.getByAsDto(param) },
-            list = concretes
-        )
+        return kotlin
+            .runCatching {
+                val link = concretes
+                    .map { link -> link.substringAfterLast("/") }
+                    .joinToString { "," }
+                api.getMultiCharacter(link)
+            }
+            .mapCatching { list ->
+                list.map(personagesDtoToDomain)
+            }
             .onFailure {
-                outSourceLogic.onFailedFetchConcrete(
+                outSourceLogic.onFailedFetchMultiply(
                     mapper = personagesDbModelToDomain,
-                    concreteReTaker = { dao.getAllPersonages() }
+                    multiTaker = { dao.getAllPersonages() }
                 )
             }
     }
 
     override suspend fun getConcrete(id: Int): Result<PersonageDomain> {
-        return outSourceLogic.getConcrete(
-            mapper = personagesDtoToDomain,
-            fetcher = { api.getSingleCharacter(id) },
-        )
+        return kotlin
+            .runCatching { api.getSingleCharacter(id) }
+            .mapCatching(personagesDtoToDomain)
             .onFailure {
-                W { it.message }
                 outSourceLogic.onFailedFetchConcrete(
                     mapper = personagesDbModelToDomain,
-                    concreteReTaker = { dao.getAllPersonages() }
+                    concreteReTaker = { dao.getConcretePersonage(id) }
                 )
             }
     }

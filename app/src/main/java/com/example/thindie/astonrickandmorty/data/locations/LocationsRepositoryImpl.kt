@@ -10,6 +10,7 @@ import com.example.thindie.astonrickandmorty.data.locationsDomainToDbModel
 import com.example.thindie.astonrickandmorty.data.locationsDtoToDomain
 import com.example.thindie.astonrickandmorty.data.remotesource.LocationApi
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.location.LocationDto
+import com.example.thindie.astonrickandmorty.data.remotesource.util.commaQueryEncodedBuilder
 import com.example.thindie.astonrickandmorty.domain.locations.LocationDomain
 import com.example.thindie.astonrickandmorty.domain.locations.LocationRepository
 import javax.inject.Inject
@@ -45,28 +46,31 @@ class LocationsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPoolOf(concretes: List<String>): Result<List<LocationDomain>> {
-        return outSourceLogic.fetchAllAsDto(
-            mapper = locationsDtoToDomain,
-            fetcher = { param -> api.getByAsDto(param) },
-            list = concretes
-        )
+        return kotlin
+            .runCatching {
+                val link = concretes
+                    .map { link -> link.substringAfterLast("/") }
+                api.getMultiLocation(commaQueryEncodedBuilder(link))
+            }
+            .mapCatching { list ->
+                list.map(locationsDtoToDomain)
+            }
             .onFailure {
-                outSourceLogic.onFailedFetchConcrete(
+                outSourceLogic.onFailedFetchMultiply(
                     mapper = locationsDbModelToDomain,
-                    concreteReTaker = { dao.getAllLocations() }
+                    multiTaker = { dao.getAllLocations() }
                 )
             }
     }
 
     override suspend fun getConcrete(id: Int): Result<LocationDomain> {
-        return outSourceLogic.getConcrete(
-            mapper = locationsDtoToDomain,
-            fetcher = { api.getSingleLocation(id) },
-        )
+        return kotlin
+            .runCatching { api.getSingleLocation(id) }
+            .mapCatching (locationsDtoToDomain)
             .onFailure {
                 outSourceLogic.onFailedFetchConcrete(
                     mapper = locationsDbModelToDomain,
-                    concreteReTaker = { dao.getAllLocations() }
+                    concreteReTaker = { dao.getConcreteLocation(id) }
                 )
             }
     }

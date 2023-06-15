@@ -10,6 +10,7 @@ import com.example.thindie.astonrickandmorty.data.localsource.EpisodesDao
 import com.example.thindie.astonrickandmorty.data.localsource.entity.EpisodeDbModel
 import com.example.thindie.astonrickandmorty.data.remotesource.EpisodesApi
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.episode.EpisodesDto
+import com.example.thindie.astonrickandmorty.data.remotesource.util.commaQueryEncodedBuilder
 import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeDomain
 import com.example.thindie.astonrickandmorty.domain.episodes.EpisodeRepository
 import javax.inject.Inject
@@ -44,31 +45,31 @@ class EpisodesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPoolOf(concretes: List<String>): Result<List<EpisodeDomain>> {
-        return outSourceLogic.fetchAllAsDto(
-            mapper = episodesDtoToDomain,
-            fetcher = { param -> api.getByAsDto(param) },
-            list = concretes
-        )
-            .onFailure {
-                outSourceLogic.onFailedFetchConcrete(
-                    mapper = episodesDbModelToDomain,
-                    concreteReTaker = { dao.getAllEpisodes() }
-                )
+        return kotlin
+            .runCatching {
+                val link = concretes
+                    .map { link -> link.substringAfterLast("/") }
+                api.getMultiEpisode(commaQueryEncodedBuilder(link))
             }
-            .onSuccess {
-
+            .mapCatching { list ->
+                list.map(episodesDtoToDomain)
+            }
+            .onFailure {
+                outSourceLogic.onFailedFetchMultiply(
+                    mapper = episodesDbModelToDomain,
+                    multiTaker = { dao.getAllEpisodes() }
+                )
             }
     }
 
     override suspend fun getConcrete(id: Int): Result<EpisodeDomain> {
-        return outSourceLogic.getConcrete(
-            mapper = episodesDtoToDomain,
-            fetcher = { api.getSingleEpisode(id) },
-        )
+        return kotlin
+            .runCatching { api.getSingleEpisode(id) }
+            .mapCatching (episodesDtoToDomain)
             .onFailure {
                 outSourceLogic.onFailedFetchConcrete(
                     mapper = episodesDbModelToDomain,
-                    concreteReTaker = { dao.getAllEpisodes() }
+                    concreteReTaker = { dao.getConcreteEpisode(id) }
                 )
             }
     }

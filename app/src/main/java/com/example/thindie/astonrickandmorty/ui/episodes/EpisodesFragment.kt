@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.R
+import com.example.thindie.astonrickandmorty.W
 import com.example.thindie.astonrickandmorty.databinding.FragmentEpisodesBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
 import com.example.thindie.astonrickandmorty.ui.basis.FOC
@@ -68,7 +69,7 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
                     FOC(state)
                 }
                 is OutsourceLogic.UiState.Loading -> {
-                         state.show(progress)
+                    state.show(progress)
                 }
                 else -> {
 
@@ -101,6 +102,9 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
         if (isParent) {
             _recyclerView =
                 binding.recyclerViewGridParent.recyclerViewGrid
+                    .apply {
+                        visibility = View.VISIBLE
+                    }
             binding.recyclerViewListParent.recyclerViewList.visibility = View.GONE
 
             viewModel.setAdapter(
@@ -115,6 +119,9 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
 
             _recyclerView =
                 binding.recyclerViewListParent.recyclerViewList
+                    .apply {
+                        visibility = View.VISIBLE
+                    }
             binding.recyclerViewGridParent.recyclerViewGrid.visibility = View.GONE
 
             viewModel.setAdapter(
@@ -148,7 +155,7 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
         setRecyclerView()
         observeRecyclerView()
         viewModel.onConcreteScreenObtainList(childPropertyEpisodesList)
-
+        W { childPropertyEpisodesList.toString() }
     }
 
     override fun onCreateView(

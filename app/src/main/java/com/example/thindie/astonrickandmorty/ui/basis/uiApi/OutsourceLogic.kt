@@ -32,15 +32,13 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
         mapper: Domain.() -> SearchAble,
     ) {
         _observable.value = UiState.Loading
-        if (concretes.isEmpty()) {
-            provider.getPoolOf(concretes)
-                .onSuccess { T ->
-                    _observable.value =
-                        UiState.SuccessFetchResultConcrete(T.first().mapper())
-                }.onFailure { error ->
-                    _observable.value = UiState.BadResult(error)
-                }
-        }
+        provider.getPoolOf(concretes)
+            .onSuccess { resultPool ->
+                _observable.value =
+                    UiState.SuccessFetchResult(resultPool.map { mapper(it) })
+            }.onFailure { error ->
+                _observable.value = UiState.BadResult(error)
+            }
     }
 
     suspend fun fetchConcrete(
@@ -48,9 +46,9 @@ class OutsourceLogic<Domain, Filters>(private val provider: BaseProvider<Domain,
         mapper: Domain.() -> SearchAble,
     ) {
         provider.getConcrete(id)
-            .onSuccess { T ->
+            .onSuccess { concreteResult ->
                 _observable.value =
-                    UiState.SuccessFetchResultConcrete(T.mapper())
+                    UiState.SuccessFetchResultConcrete(mapper(concreteResult))
             }.onFailure { error ->
                 _observable.value = UiState.BadResult(error)
             }

@@ -26,11 +26,12 @@ class Router private constructor(
     get() = destinations.last()
 
     fun navigate(fragment: Fragment? = null) {
-        appCompatActivity.supportFragmentManager
-            .popBackStack()
+
 
         if (fragment == null) onInit()
         else {
+            appCompatActivity.supportFragmentManager
+                .popBackStack()
             val isNotExist = appCompatActivity
                 .supportFragmentManager
                 .findFragmentByTag(fragment::class.java.name) == null

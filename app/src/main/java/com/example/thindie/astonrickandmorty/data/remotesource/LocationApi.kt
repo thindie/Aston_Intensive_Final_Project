@@ -23,6 +23,11 @@ interface LocationApi {
         @Path("id") locationId: Int
     ): LocationDto
 
+    @GET(LOCATION_ID)
+    suspend fun getMultiLocation(
+        @Path("id", encoded = true) characterId: String
+    ): List<LocationDto>
+
     @GET
     suspend fun getBy(@Url url: String): LocationResponse
 

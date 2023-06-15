@@ -11,8 +11,3 @@ fun commaQueryEncodedBuilder(list: Iterable<String>): String {
     }
     return string
 }
-
-@JvmName("commaQueryEncodedBuilderChar")
-fun Iterable<Char>.commaQueryEncodedBuilder(): String {
-    return commaQueryEncodedBuilder(map { toString() })
-}

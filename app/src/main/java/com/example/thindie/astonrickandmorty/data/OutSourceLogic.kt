@@ -12,25 +12,14 @@ class OutSourceLogic<Domain, Remote, Local> {
         }.mapCatching(mapper)
     }
 
-    suspend fun fetchAllAsDto(
-        list: List<String>,
-        mapper: (Remote) -> Domain,
-        fetcher: suspend (String) -> Remote
-    ): Result<List<Domain>> {
-        return kotlin
-            .runCatching {
-                list.map { param -> fetcher(param) }
-            }.mapCatching { remote -> remote.map(mapper) }
-    }
 
 
     suspend fun onFailedFetchConcrete(
-        mapper: Local.() -> Domain, concreteReTaker: suspend () -> List<Local>
-    ): Result<List<Domain>> {
+        mapper: (Local) -> Domain, concreteReTaker: suspend () -> Local
+    ): Result<Domain> {
         return kotlin
             .runCatching {
-                concreteReTaker()
-                    .map(mapper)
+                mapper (concreteReTaker())
             }
     }
 
@@ -53,13 +42,6 @@ class OutSourceLogic<Domain, Remote, Local> {
         poster(list.map(mapper))
     }
 
-    suspend fun getConcrete(
-        mapper: (Remote) -> Domain,
-        fetcher: suspend () -> Remote
-    ): Result<Domain> {
-        return kotlin
-            .runCatching { mapper(fetcher()) }
-    }
 
 
     companion object {
