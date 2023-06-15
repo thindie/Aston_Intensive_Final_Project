@@ -81,12 +81,10 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
     override fun getHolderIdSupplier(): ViewHolderIdSupplier {
         if (isParent) {
             return ViewHolderIdSupplier(
-                viewHolderLayout = R.layout.item_grid_personages,
-                majorChild = R.id.item_grid_personages_name,
-                titleChild = R.id.item_grid_personages_status,
-                lesserChild = R.id.item_grid_personages_species,
-                expandedChild = R.id.item_grid_personages_gender,
-                imageChild = R.id.item_grid_personages_image
+                viewHolderLayout = R.layout.item_grid_episodes,
+                majorChild = R.id.item_grid_episodes_episode,
+                titleChild = R.id.item_grid_episodes,
+                lesserChild = R.id.item_grid_episodes_air_date,
             )
         } else {
             return ViewHolderIdSupplier(

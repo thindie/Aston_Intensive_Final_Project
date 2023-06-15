@@ -6,6 +6,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
+     <LinearLayout
+         android:id="@+id/personage_concrete_parent_info_component"
+         android:layout_width="match_parent"
+         android:layout_height="200dp"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toTopOf="@id/episode_concrete_fragment_container"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         android:orientation="vertical">
+
+          <TextView
+              android:id="@+id/episode_concrete_major_component1"
+              android:layout_width="match_parent"
+              android:layout_height="80dp" />
+
+          <TextView
+              android:id="@+id/episode_concrete_major_component2"
+              android:layout_width="match_parent"
+              android:layout_height="60dp" />
+
+          <TextView
+              android:id="@+id/episode_concrete_major_component3"
+              android:layout_width="match_parent"
+              android:layout_height="60dp" />
+     </LinearLayout>
 
      <androidx.fragment.app.FragmentContainerView
          android:layout_width="0dp"

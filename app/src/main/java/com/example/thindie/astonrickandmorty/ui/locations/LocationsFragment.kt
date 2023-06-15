@@ -38,9 +38,7 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
     private var isParent: Boolean = true
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        try {
-            isParent = requireArguments().getBoolean(IS_PARENT)
-        } catch (e : Exception){ /* ignore */ }
+
     }
 
     override fun actAsAParentFragment() {
@@ -62,33 +60,19 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
         }
     }
 
-    override fun actAsAChildFragment() {
-
-    }
-
+    override fun actAsAChildFragment() {}
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isParent) actAsAParentFragment() else actAsAChildFragment()
     }
 
     override fun getHolderIdSupplier(): ViewHolderIdSupplier {
-        if (isParent) {
             return ViewHolderIdSupplier(
                 viewHolderLayout = R.layout.item_grid_locations,
                 majorChild = R.id.item_grid_locations_name,
                 titleChild = R.id.item_grid_locations_type,
                 lesserChild = R.id.item_grid_locations_dimension,
             )
-        } else {
-            return ViewHolderIdSupplier(
-                viewHolderLayout = 0,
-                majorChild = 0,
-                titleChild = 0,
-                lesserChild = 0,
-                expandedChild = null,
-                imageChild = null
-            )
-        }
     }
 
     override fun setRecyclerView() {
@@ -102,8 +86,6 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
             if (_recyclerView.adapter is EventMediator<*>) {
                 listener = _recyclerView.adapter as EventMediator<Scroll>
             }
-        } else {
-
         }
     }
 
@@ -114,10 +96,7 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
                 ScrollListener(listener)
             )
 
-        } else {
-
         }
-
     }
 
     override fun onPause() {
@@ -148,15 +127,4 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
         return viewModel.adapter.currentList
     }
 
-    companion object {
-        private const val IS_PARENT = "isParent"
-        operator fun invoke(isParent: Boolean = true): LocationsFragment {
-            val bundle = Bundle().apply {
-                putBoolean(IS_PARENT, isParent)
-            }
-            return LocationsFragment().apply {
-                arguments = bundle
-            }
-        }
-    }
 }
