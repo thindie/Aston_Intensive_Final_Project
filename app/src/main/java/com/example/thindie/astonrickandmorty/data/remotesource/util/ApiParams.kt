@@ -7,7 +7,7 @@ object ApiParams {
     const val EPISODE = "${ENDPOINT}episode"
     const val EPISODE_ID = "${EPISODE}/{id}"
     const val CHARACTER_ID = "${CHARACTER}/{id}"
-    const val LOCATION_ID = "${LOCATION}/{id}"
+
     const val PAGE = "page"
     const val CHARACTER_NAME = "name"
     const val CHARACTER_STATUS = "status"

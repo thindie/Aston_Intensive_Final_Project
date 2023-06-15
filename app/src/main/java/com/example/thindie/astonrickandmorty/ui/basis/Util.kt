@@ -2,23 +2,42 @@ package com.example.thindie.astonrickandmorty.ui.basis
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-
+import com.example.thindie.astonrickandmorty.R
+import com.example.thindie.astonrickandmorty.W
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
+import kotlin.coroutines.cancellation.CancellationException
 
 fun Fragment.FOC(e: OutsourceLogic.UiState.BadResult) {
-    Toast.makeText(requireActivity(), e.error.message.toString(), Toast.LENGTH_LONG).show()
+    when (e.error) {
+       NullPointerException::class -> {
+            W { e.error.message }
+        }
+        CancellationException::class -> {
+            W { "cancellation coroutine" }
+        }
+        else -> {
+            Toast.makeText(
+                requireActivity(),
+                getString(R.string.message_error_something_wrong),
+                Toast.LENGTH_SHORT
+            )
+                .show()
+            W { " looks like something wrong - ${e.error} " }
+        }
+
+    }
 }
+
 fun Fragment.FOC(message: String) {
-    Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
+    Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT)
+        .show()
 }
 //som mapper
 
-private const val separator = "^$#*!@"
-fun fromBundleList(from: List<String>): String {
-    return from.joinToString { separator }
-}
 
-
-fun toBase(to: String): List<String> {
-    return to.split(separator)
+fun Throwable.mapMessage(): Int {
+    when (this) {
+        java.lang.NullPointerException::class -> {}
+    }
+    return 0
 }

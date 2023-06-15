@@ -18,8 +18,12 @@ class EpisodesFeatureUseCases @Inject constructor(private val baseRepository: Ep
 
     }
 
-    override suspend fun getConcrete(concretes: List<String>): Result<List<EpisodeDomain>> {
-        return useCase.fetchConcrete(concretes)
+    override suspend fun getPoolOf(concretes: List<String>): Result<List<EpisodeDomain>> {
+        return useCase.fetchPoolOf(concretes)
+    }
+
+    override suspend fun getConcrete(id: Int): Result<EpisodeDomain> {
+        return useCase.getConcrete(id)
     }
 
     override suspend fun getAll(

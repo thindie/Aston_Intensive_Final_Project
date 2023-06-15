@@ -19,8 +19,6 @@ import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewModel(),
@@ -66,15 +64,15 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
         }
     }
 
-    fun onClickConcrete(id: Int, isTargetSingle: Boolean = true) {
+    fun onClickConcrete(id: Int) {
         viewModelScope.launch {
-            outSource.fetchConcrete(listOf(id.toString()), mapEpisodesDomain, isTargetSingle)
+            outSource.fetchConcrete(id, mapEpisodesDomain)
         }
     }
 
-    fun onConcreteScreenObtainList(links: List<String>, isTargetSingle: Boolean = false ) {
+    fun onConcreteScreenObtainList(links: List<String>) {
         viewModelScope.launch {
-            outSource.fetchConcrete(links, mapEpisodesDomain, isTargetSingle)
+            outSource.fetchPool(links, mapEpisodesDomain)
         }
     }
 
@@ -100,8 +98,7 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
 
 
     override fun <Adapter : RecyclerViewAdapter<EpisodesUiModel, UiHolder>> setAdapter(adapter: Adapter) {
-        if (!this::_adapterHolder.isInitialized    ) {
-
+        if (!this::_adapterHolder.isInitialized) {
             _adapterHolder =  adapter as RecyclerViewAdapterMediatorScroll<EpisodesUiModel, UiHolder>
         }
     }

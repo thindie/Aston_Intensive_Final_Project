@@ -4,8 +4,8 @@ import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 
 class CompositionUseCase<Domain> private constructor(private val baseRepository: BaseRepository<Domain>) {
 
-    suspend fun fetchConcrete(ids: List<String>): Result<List<Domain>> {
-        return baseRepository.getConcrete(ids)
+    suspend fun fetchPoolOf(ids: List<String>): Result<List<Domain>> {
+        return baseRepository.getPoolOf(ids)
     }
 
 
@@ -26,6 +26,10 @@ class CompositionUseCase<Domain> private constructor(private val baseRepository:
                     .detectActualFilteringCases()
                 someFilter.filter(entityList)
             }
+    }
+
+   suspend fun getConcrete(id: Int): Result<Domain> {
+        return baseRepository.getConcrete(id)
     }
 
 

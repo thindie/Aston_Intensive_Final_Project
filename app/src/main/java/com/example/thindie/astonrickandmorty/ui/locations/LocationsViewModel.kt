@@ -20,8 +20,6 @@ import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LocationsViewModel @Inject constructor(private val provider: LocationProvider) : ViewModel(),
@@ -65,15 +63,15 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
         }
     }
 
-    fun onClickConcrete(id: Int, isTargetSingle: Boolean = true) {
+    fun onClickConcrete(id: Int) {
         viewModelScope.launch {
-            outSource.fetchConcrete(listOf(id.toString()), mapLocationDomain, isTargetSingle)
+            outSource.fetchConcrete(id, mapLocationDomain )
         }
     }
 
-    fun onConcreteScreenObtainList(links: List<String>, isTargetSingle: Boolean = false) {
+    fun onConcreteScreenObtainList(links: List<String>) {
         viewModelScope.launch {
-            outSource.fetchConcrete(links, mapLocationDomain, isTargetSingle)
+            outSource.fetchPool(links, mapLocationDomain )
         }
     }
 

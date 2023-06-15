@@ -1,4 +1,4 @@
-package com.example.thindie.astonrickandmorty.ui.basis
+package com.example.thindie.astonrickandmorty.ui.basis.uiApi
 
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 

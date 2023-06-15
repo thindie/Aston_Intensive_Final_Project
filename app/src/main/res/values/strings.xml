@@ -6,4 +6,6 @@
     <string name="search">search..</string>
     <string name="error_message_noting_found">Nothing found.. relaunch data..</string>
     <string name="error_fragment_havent_proper_arguments">something are loss, can\'t show some</string>
+    <string name="message_internet_trouble">looks like trouble with internet</string>
+    <string name="message_error_something_wrong">looks like something wrong</string>
 </resources>

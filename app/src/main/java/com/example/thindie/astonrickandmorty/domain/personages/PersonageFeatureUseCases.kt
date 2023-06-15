@@ -21,9 +21,12 @@ class PersonageFeatureUseCases @Inject constructor(private val baseRepository: P
     }
 
 
-    override suspend fun getConcrete(concretes: List<String>): Result<List<PersonageDomain>> {
-        Log.d("SERVICE_TAG", "ON_PERSONAGE_USECASE")
-        return useCase.fetchConcrete(concretes)
+    override suspend fun getPoolOf(concretes: List<String>): Result<List<PersonageDomain>> {
+        return useCase.fetchPoolOf(concretes)
+    }
+
+    override suspend fun getConcrete(id: Int): Result<PersonageDomain> {
+        return useCase.getConcrete(id)
     }
 
     override suspend fun getAll(
@@ -31,7 +34,7 @@ class PersonageFeatureUseCases @Inject constructor(private val baseRepository: P
         url: String?,
         idS: List<String>
     ): Result<List<PersonageDomain>> {
-        Log.d("SERVICE_TAG", url.toString())
+
         return if (filter.isDefault) useCase.fetchAll(url, idS)
         else useCase.onSpecifiedFilter(filter) { useCase.fetchAll(url, idS) }
     }

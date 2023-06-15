@@ -5,7 +5,9 @@ import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 interface BaseProvider<Domain, Filters> {
 
 
-    suspend fun getConcrete(concretes: List<String>): Result<List<Domain>>
+    suspend fun getPoolOf(concretes: List<String>): Result<List<Domain>>
+
+    suspend fun getConcrete(id: Int): Result<Domain>
 
     suspend fun getAll(
         filter: Filter<Domain, Filters>,

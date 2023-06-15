@@ -1,8 +1,5 @@
 package com.example.thindie.astonrickandmorty.data
 
-import android.util.Log
-import com.example.thindie.astonrickandmorty.data.remotesource.util.commaQueryEncodedBuilder
-
 class OutSourceLogic<Domain, Remote, Local> {
 
 
@@ -16,13 +13,14 @@ class OutSourceLogic<Domain, Remote, Local> {
     }
 
     suspend fun fetchAllAsDto(
+        list: List<String>,
         mapper: (Remote) -> Domain,
-        fetcher: suspend () -> List<Remote>
+        fetcher: suspend (String) -> Remote
     ): Result<List<Domain>> {
-        return kotlin.runCatching {
-            fetcher()
-                .map(mapper)
-        }
+        return kotlin
+            .runCatching {
+                list.map { param -> fetcher(param) }
+            }.mapCatching { remote -> remote.map(mapper) }
     }
 
 
@@ -47,26 +45,20 @@ class OutSourceLogic<Domain, Remote, Local> {
             }
     }
 
-    suspend fun List<Remote>.onLocalPost(
-        mapper: Remote.() -> Local,
+    suspend fun onLocalPost(
+        list: List<Domain>,
+        mapper: Domain.() -> Local,
         poster: suspend (List<Local>) -> Unit
     ) {
-        poster(map(mapper))
+        poster(list.map(mapper))
     }
 
     suspend fun getConcrete(
-        concretes: List<String>,
         mapper: (Remote) -> Domain,
-        fetcher: suspend (Int) -> List<Remote>
-    ): Result<List<Domain>> {
-       /* val path = concretes
-            .map { concrete ->
-                concrete.last().toString()
-            }
-*/
+        fetcher: suspend () -> Remote
+    ): Result<Domain> {
         return kotlin
-            .runCatching { fetcher(4) }
-            .mapCatching { list -> list.map(mapper) }
+            .runCatching { mapper(fetcher()) }
     }
 
 

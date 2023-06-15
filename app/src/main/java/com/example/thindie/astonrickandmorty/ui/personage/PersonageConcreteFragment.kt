@@ -9,7 +9,7 @@ import androidx.core.os.bundleOf
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonageConcreteBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseConcreteFragment
-import com.example.thindie.astonrickandmorty.ui.basis.ConcreteFragmentTools
+import com.example.thindie.astonrickandmorty.ui.basis.uiApi.ConcreteFragmentTools
 import com.example.thindie.astonrickandmorty.ui.basis.FOC
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
@@ -30,13 +30,12 @@ class PersonageConcreteFragment : BaseConcreteFragment(), ConcreteFragmentTools 
     private var _binding: FragmentPersonageConcreteBinding? = null
     private val binding get() = _binding!!
     override fun actAsAParentFragment() {
-
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is OutsourceLogic.UiState.SuccessFetchResultConcrete<*> -> {
-                    val stateConcrete = state.fetchedUnit.toUiEntity<PersonagesUiModel>()
-                    val episodes = stateConcrete.episode
-                    initialiseParent(stateConcrete)
+                    val concreteOperatedUiModel = state.fetchedUnit.toUiEntity<PersonagesUiModel>()
+                    val episodes = concreteOperatedUiModel.episode
+                    initialiseParent(concreteOperatedUiModel)
                     initialiseChild(episodes)
                 }
                 is OutsourceLogic.UiState.BadResult -> {

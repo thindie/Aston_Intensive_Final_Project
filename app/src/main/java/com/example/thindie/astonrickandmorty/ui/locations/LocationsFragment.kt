@@ -31,7 +31,7 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
     private lateinit var listener: EventMediator<Scroll>
     private var _binding: FragmentLocationsBinding? = null
     private val binding get() = _binding!!
-
+    private val progress by lazy { binding.progressHorizontalLocations }
 
     private val viewModel: LocationsViewModel by lazy { getVM(this) }
 
@@ -55,6 +55,7 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
                     viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
                 }
                 is OutsourceLogic.UiState.BadResult -> { FOC(state) }
+                is OutsourceLogic.UiState.Loading -> { state.show(progress) }
                 else -> {
                  }
             }

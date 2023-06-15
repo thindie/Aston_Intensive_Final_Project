@@ -31,6 +31,7 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
 
     private var _binding: FragmentEpisodesBinding? = null
     private val binding get() = _binding!!
+    private val progress by lazy { binding.progressHorizontalEpisodes }
 
     private val viewModel: EpisodesViewModel by lazy { getVM(this) }
     private lateinit var listener: EventMediator<Scroll>
@@ -50,9 +51,30 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
         }
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         if (isParent) actAsAParentFragment() else actAsAChildFragment()
+        viewModel.viewState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
+                    state.hide(progress)
+                    viewModel
+                        .adapter
+                        .submitList(state.list.map { it.toUiEntity() })
+                }
+                is OutsourceLogic.UiState.BadResult -> {
+                    FOC(state)
+                }
+                is OutsourceLogic.UiState.Loading -> {
+                         state.show(progress)
+                }
+                else -> {
+
+                }
+            }
+        }
     }
 
     override fun getHolderIdSupplier(): ViewHolderIdSupplier {
@@ -67,12 +89,10 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
             )
         } else {
             return ViewHolderIdSupplier(
-                viewHolderLayout = 0,
-                majorChild = 0,
-                titleChild = 0,
-                lesserChild = 0,
-                expandedChild = null,
-                imageChild = null
+                viewHolderLayout = R.layout.item_list_personage_details_screen,
+                majorChild = R.id.item_list_episodes_name,
+                titleChild = R.id.item_list_episodes_episode,
+                lesserChild = R.id.item_list_episodes_air_date
             )
         }
     }
@@ -81,6 +101,8 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
         if (isParent) {
             _recyclerView =
                 binding.recyclerViewGridParent.recyclerViewGrid
+            binding.recyclerViewListParent.recyclerViewList.visibility = View.GONE
+
             viewModel.setAdapter(
                 RecyclerViewAdapterMediatorScroll(viewHolderIdSupplier = getHolderIdSupplier(),
                     onClickedViewHolder = { fragmentsRouter.router.navigate(EpisodesConcreteFragment()) })
@@ -91,6 +113,15 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
             }
         } else {
 
+            _recyclerView =
+                binding.recyclerViewListParent.recyclerViewList
+            binding.recyclerViewGridParent.recyclerViewGrid.visibility = View.GONE
+
+            viewModel.setAdapter(
+                RecyclerViewAdapterMediatorScroll(viewHolderIdSupplier = getHolderIdSupplier(),
+                    onClickedViewHolder = { FOC("CLIKED AT EPISODES") })
+            )
+            _recyclerView.adapter = viewModel.adapter
         }
     }
 
@@ -100,10 +131,7 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
             recyclerView.addOnScrollListener(
                 ScrollListener(listener)
             )
-        } else {
-
         }
-
     }
 
 
@@ -113,20 +141,13 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
         setRecyclerView()
         observeRecyclerView()
         viewModel.onClickedNavigationButton()
-        viewModel.viewState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
-                    viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
-                }
-                is OutsourceLogic.UiState.BadResult -> {
-                    FOC(state)
-                }
-                else -> {}
-            }
-        }
+
     }
 
     override fun actAsAChildFragment() {
+        setRecyclerView()
+        observeRecyclerView()
+        viewModel.onConcreteScreenObtainList(childPropertyEpisodesList)
 
     }
 
@@ -167,7 +188,8 @@ class EpisodesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter
             return EpisodesFragment().apply {
                 arguments = bundleOf(
                     IS_PARENT to isParent,
-                    EPISODES to episodesLinks)
+                    EPISODES to episodesLinks
+                )
             }
         }
     }

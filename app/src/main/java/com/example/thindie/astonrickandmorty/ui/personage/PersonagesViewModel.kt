@@ -1,6 +1,5 @@
 package com.example.thindie.astonrickandmorty.ui.personage
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -46,16 +45,16 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
     }
 
     private fun onReactScrollDown() {
-        if (outSource.scroll is OutsourceLogic.ScrollDispatcher.Listening)
-            viewModelScope.launch {
 
-                outSource.fetchAll(
-                    mapPersonageDomain,
-                    url = "https://rickandmortyapi.com/api/character/?page=2"
-                ) {
-                    onApplyFilter()
-                }
+        viewModelScope.launch {
+
+            outSource.fetchAll(
+                mapPersonageDomain,
+                url = "https://rickandmortyapi.com/api/character/?page=2"
+            ) {
+                onApplyFilter()
             }
+        }
 
     }
 
@@ -67,16 +66,15 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
         }
     }
 
-    fun onClickConcrete(id: Int, isTargetSingle: Boolean = true) {
-        Log.d("SERVICE_TAG", "VM_ON_CLICK_CONCRETE")
+    fun onClickConcrete(id: Int) {
         viewModelScope.launch {
-            outSource.fetchConcrete(listOf(id.toString()), mapPersonageDomain, isTargetSingle)
+            outSource.fetchConcrete(id, mapPersonageDomain)
         }
     }
 
-    fun onConcreteScreenObtainList(links: List<String>, isTargetSingle: Boolean = false) {
+    fun onConcreteScreenObtainList(links: List<String>) {
         viewModelScope.launch {
-            outSource.fetchConcrete(links, mapPersonageDomain, isTargetSingle)
+            outSource.fetchPool(links, mapPersonageDomain)
         }
     }
 

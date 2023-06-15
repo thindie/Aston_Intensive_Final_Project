@@ -89,6 +89,17 @@ val personagesDtoToDomain: (PersonageDto) -> PersonageDomain = { personagesDto -
     personagesDto.toPersonageDomain(stubLinkPool)
 }
 
+val personagesDomainToDbModel: (PersonageDomain) -> PersonageDbModel = { personageDomain ->
+    personageDomain.toPersonageDbModel()
+}
+
+val locationsDomainToDbModel: (LocationDomain) -> LocationDbModel = { locationsDomain ->
+    locationsDomain.toLocationDbModel()
+}
+
+val episodesDomainToDbModel: (EpisodeDomain) -> EpisodeDbModel = { episodesDomain ->
+    episodesDomain.toEpisodeDbModel()
+}
 
 fun EpisodeDbModel.toEpisodesDomain(): EpisodeDomain {
     return EpisodeDomain(

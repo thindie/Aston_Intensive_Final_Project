@@ -22,10 +22,13 @@ class Router private constructor(
     private val startDestination: String = startScreen::class.java.name
 ) {
 
-    val currentScreen: String
+    private val currentScreen: String
     get() = destinations.last()
 
     fun navigate(fragment: Fragment? = null) {
+        appCompatActivity.supportFragmentManager
+            .popBackStack()
+
         if (fragment == null) onInit()
         else {
             val isNotExist = appCompatActivity
@@ -52,19 +55,23 @@ class Router private constructor(
 
     private fun onBackPress() {
         if (destinations.size > 1) {
+            val destination = currentScreen
             destinations.removeLast()
-            navigateAfterLastInStackRemoved()
+            navigateAfterLastInStackRemoved(destination)
         } else appCompatActivity.finish()
     }
 
-    private fun navigateAfterLastInStackRemoved() {
+    private fun navigateAfterLastInStackRemoved(destination: String) {
+        appCompatActivity.supportFragmentManager
+            .popBackStack()
+
         appCompatActivity.supportFragmentManager
             .beginTransaction()
             .replace(
                 container,
                 appCompatActivity
                     .supportFragmentManager
-                    .findFragmentByTag(destinations.last())
+                    .findFragmentByTag(destination)
                     ?: startScreen
             ).commit()
     }
@@ -75,8 +82,8 @@ class Router private constructor(
             .replace(
                 container,
                 startScreen,
-                destinations.last()
-            ).addToBackStack(destinations.last())
+                currentScreen
+            ).addToBackStack(currentScreen)
             .commit()
     }
 
@@ -88,7 +95,7 @@ class Router private constructor(
                 container,
                 appCompatActivity
                     .supportFragmentManager
-                    .findFragmentByTag(destinations.last())
+                    .findFragmentByTag(currentScreen)
                     ?: startScreen
             ).commit()
     }
@@ -100,7 +107,7 @@ class Router private constructor(
                 container,
                 appCompatActivity
                     .supportFragmentManager
-                    .findFragmentByTag(destinations.last())
+                    .findFragmentByTag(currentScreen)
                     ?: startScreen
             ).commit()
     }
@@ -112,9 +119,9 @@ class Router private constructor(
             .replace(
                 container,
                 fragment,
-                destinations.last()
+                currentScreen
             )
-            .addToBackStack(destinations.last())
+            .addToBackStack(currentScreen)
             .commit()
     }
 

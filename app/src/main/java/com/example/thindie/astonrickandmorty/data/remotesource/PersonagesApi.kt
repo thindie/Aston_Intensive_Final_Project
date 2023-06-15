@@ -21,22 +21,12 @@ interface PersonagesApi {
     ): PersonageDto
 
     @GET
-    suspend fun getBy(@Url url: String):  PersonageResponse
+    suspend fun getBy(@Url url: String): PersonageResponse
 
-    @GET(CHARACTER_ID)
-    suspend fun getMultiply(
-        @Path(
-            "id",
-            encoded = false
-        ) id: Int
-    ):  List<PersonageDto>
-
+    @GET
+    suspend fun getByAsDto(@Url url: String): PersonageDto
 }
 
 private const val ENDPOINT = "https://rickandmortyapi.com/api/"
 private const val CHARACTER = "${ENDPOINT}character"
-private const val LOCATION = "${ENDPOINT}location"
-private const val EPISODE = "${ENDPOINT}episode"
-private const val EPISODE_ID = "${EPISODE}/{id},"
-private const val CHARACTER_ID = "${CHARACTER}/{id},"
-private const val LOCATION_ID = "${LOCATION}/{id},"
+private const val CHARACTER_ID = "${CHARACTER}/{id}"

@@ -18,8 +18,12 @@ class LocationsFeatureUseCases @Inject constructor(private val baseRepository: L
         require(this::useCase.isInitialized) { " failed UseCase<T> initialisation in ${this::class.simpleName}" }
     }
 
-    override suspend fun getConcrete(concretes: List<String>): Result<List<LocationDomain>> {
-        return useCase.fetchConcrete(concretes)
+    override suspend fun getPoolOf(concretes: List<String>): Result<List<LocationDomain>> {
+        return useCase.fetchPoolOf(concretes)
+    }
+
+    override suspend fun getConcrete(id: Int): Result<LocationDomain> {
+        return useCase.getConcrete(id)
     }
 
     override suspend fun getAll(

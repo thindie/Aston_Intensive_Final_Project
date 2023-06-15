@@ -2,11 +2,10 @@ package com.example.thindie.astonrickandmorty.ui.personage
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.R
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonagesBinding
@@ -26,8 +25,8 @@ import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsum
 class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapter {
 
     private var _binding: FragmentPersonagesBinding? = null
-
     private val binding get() = _binding!!
+    private val progress by lazy { binding.progressHorizontalPersonages }
     private val viewModel: PersonagesViewModel by lazy { getVM(this) }
 
     private lateinit var listener: EventMediator<Scroll>
@@ -38,14 +37,15 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
         super.onAttach(context)
         try {
             isParent = requireArguments().getBoolean(IS_PARENT)
-        } catch (e : Exception){ /* ignore */ }
+        } catch (e: Exception) { /* ignore */
+        }
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(isParent) actAsAParentFragment()
+        if (isParent) actAsAParentFragment()
         else actAsAChildFragment()
 
     }
@@ -55,7 +55,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
         get() = _recyclerView
 
     override fun getHolderIdSupplier(): ViewHolderIdSupplier {
-        if(isParent) {
+        if (isParent) {
             return ViewHolderIdSupplier(
                 viewHolderLayout = R.layout.item_grid_personages,
                 majorChild = R.id.item_grid_personages_name,
@@ -64,8 +64,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
                 expandedChild = R.id.item_grid_personages_gender,
                 imageChild = R.id.item_grid_personages_image
             )
-        }
-        else {
+        } else {
             return ViewHolderIdSupplier(
                 viewHolderLayout = 0,
                 majorChild = 0,
@@ -79,39 +78,39 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
     }
 
     override fun setRecyclerView() {
-        if (isParent){
+        if (isParent) {
             _recyclerView =
                 binding.recyclerViewGridParent.recyclerViewGrid
-            viewModel.setAdapter(RecyclerViewAdapterMediatorScroll(
-                viewHolderIdSupplier = getHolderIdSupplier(),
-                onClickedViewHolder = {
-                    fragmentsRouter.router.navigate(PersonageConcreteFragment(it.id))
-                     }))
+            viewModel.setAdapter(
+                RecyclerViewAdapterMediatorScroll(
+                    viewHolderIdSupplier = getHolderIdSupplier(),
+                    onClickedViewHolder = {
+                        fragmentsRouter.router.navigate(PersonageConcreteFragment(it.id))
+                    })
+            )
             _recyclerView.adapter = viewModel.adapter
             if (_recyclerView.adapter is EventMediator<*>) {
                 listener = _recyclerView.adapter as EventMediator<Scroll>
             }
+        } else {
         }
-        else {}
 
     }
 
     override fun observeRecyclerView() {
-        if(isParent){
+        if (isParent) {
             viewModel.observe(listener)
             recyclerView.addOnScrollListener(
                 ScrollListener(listener)
             )
+        } else {
         }
-        else {}
     }
 
     override fun onPause() {
         super.onPause()
         if (this::_recyclerView.isInitialized) recyclerView.clearOnScrollListeners()
     }
-
-
 
 
     override fun actAsAParentFragment() {
@@ -124,14 +123,20 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
+                    state.hide(progress)
                     viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
                 }
                 is OutsourceLogic.UiState.SuccessFetchResultConcrete<*> -> {
-
-
+                    state.hide(progress)
                 }
-                is OutsourceLogic.UiState.BadResult -> { FOC(state) }
-                else -> {}
+                is OutsourceLogic.UiState.BadResult -> {
+                    FOC(state)
+                }
+                is OutsourceLogic.UiState.Loading -> {
+                    state.show(progress)
+                }
+                else -> { /* ignore */
+                }
             }
 
         }
@@ -167,11 +172,9 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
     companion object {
         private const val IS_PARENT = "isParent"
         operator fun invoke(isParent: Boolean = true): PersonagesFragment {
-            val bundle = Bundle().apply {
-                putBoolean(IS_PARENT, isParent)
-            }
+
             return PersonagesFragment().apply {
-                arguments = bundle
+                arguments = bundleOf(IS_PARENT to isParent)
             }
         }
     }
