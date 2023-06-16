@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_episode_concrete"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     >
+
      <LinearLayout
          android:id="@+id/personage_concrete_parent_info_component"
          android:layout_width="match_parent"
-         android:layout_height="200dp"
-         app:layout_constraintStart_toStartOf="parent"
+         android:layout_height="match_parent"
+         android:layout_weight="0.3"
+         android:orientation="vertical"
          app:layout_constraintBottom_toTopOf="@id/episode_concrete_fragment_container"
-         app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         android:orientation="vertical">
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent">
 
           <TextView
               android:id="@+id/episode_concrete_major_component1"
               android:layout_width="match_parent"
-              android:layout_height="80dp" />
+              android:layout_height="wrap_content" />
 
           <TextView
               android:id="@+id/episode_concrete_major_component2"
               android:layout_width="match_parent"
-              android:layout_height="60dp" />
+              android:layout_height="wrap_content" />
 
           <TextView
               android:id="@+id/episode_concrete_major_component3"
               android:layout_width="match_parent"
-              android:layout_height="60dp" />
+              android:layout_height="wrap_content" />
      </LinearLayout>
 
      <androidx.fragment.app.FragmentContainerView
          android:layout_width="0dp"
+         android:layout_weight="0.7"
          android:layout_height="0dp"
          android:id="@+id/episode_concrete_fragment_container"
          app:layout_constraintTop_toTopOf="parent"
@@ -46,4 +50,4 @@
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

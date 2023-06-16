@@ -14,12 +14,14 @@ import com.example.thindie.astonrickandmorty.ui.basis.FOC
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecycleViewed
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterFragment
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.ScrollListener
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.UsesSearchAbleAdaptedRecycleViewAdapter
+import com.example.thindie.astonrickandmorty.ui.personage.PersonagesFragment
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 
@@ -73,6 +75,11 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
                 majorChild = R.id.item_grid_locations_name,
                 titleChild = R.id.item_grid_locations_type,
                 lesserChild = R.id.item_grid_locations_dimension,
+                expandedChild = null,
+                imageChild = null,
+                extraChild = null,
+                context = requireContext(),
+                isExtraContent = true,
             )
     }
 
@@ -80,9 +87,11 @@ class LocationsFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapte
         if (isParent) {
             _recyclerView =
                 binding.recyclerViewGridParent.recyclerViewGrid
-            viewModel.setAdapter(RecyclerViewAdapterMediatorScroll(
+            viewModel.setAdapter(RecyclerViewAdapterFragment(
                 viewHolderIdSupplier = getHolderIdSupplier(),
-                onClickedViewHolder = { fragmentsRouter.router.navigate(LocationsConcreteFragment()) }))
+                onClickedViewHolder = { fragmentsRouter.router.navigate(LocationsConcreteFragment()) },
+                clazz = PersonagesFragment::class.java
+            ))
             _recyclerView.adapter = viewModel.adapter
             if (_recyclerView.adapter is EventMediator<*>) {
                 listener = _recyclerView.adapter as EventMediator<Scroll>

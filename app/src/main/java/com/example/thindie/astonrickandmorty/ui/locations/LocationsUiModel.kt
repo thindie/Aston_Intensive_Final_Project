@@ -32,6 +32,10 @@ data class LocationsUiModel(
         return dimension
     }
 
+    override fun getExtraComponent(): List<String> {
+        return residents
+    }
+
     override fun getMinorComponent(): MinorComponent {
         return MinorComponent.SimpleStringHolder(EMPTY_VALUE)
     }

@@ -7,15 +7,15 @@ import com.example.thindie.astonrickandmorty.ui.personage.PersonagesFragment
 interface RecycleViewed {
 
     companion object {
-        fun <Fragment : RecycleViewed> getInstance(list: List<String>): Fragment {
-            return when (this::class) {
-                PersonagesFragment::class -> {
-                    PersonagesFragment.invoke(characterLinks = list) as Fragment
+        fun <Fragment : RecycleViewed> getInstance(clazz: Class<Fragment>,list: List<String>): Fragment {
+            return when (clazz) {
+                PersonagesFragment::class.java -> {
+                    PersonagesFragment.invoke(characterLinks = list, isParent = false) as Fragment
                 }
-                EpisodesFragment::class -> {
-                    EpisodesFragment.invoke(episodesLinks = list) as Fragment
+                EpisodesFragment::class.java -> {
+                    EpisodesFragment.invoke(episodesLinks = list, isParent = false) as Fragment
                 }
-                LocationsFragment::class -> {
+                LocationsFragment::class.java -> {
                     LocationsFragment() as Fragment
                 }
                 else -> {

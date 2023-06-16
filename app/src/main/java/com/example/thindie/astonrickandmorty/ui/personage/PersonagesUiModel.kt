@@ -37,6 +37,10 @@ data class PersonagesUiModel(
         return status
     }
 
+    override fun getExtraComponent(): List<String> {
+        return episode
+    }
+
     override fun getMinorComponent(): MinorComponent {
         return MinorComponent.SimpleStringHolder(gender)
     }

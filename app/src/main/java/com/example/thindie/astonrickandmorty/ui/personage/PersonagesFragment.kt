@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.R
+import com.example.thindie.astonrickandmorty.W
 import com.example.thindie.astonrickandmorty.databinding.FragmentPersonagesBinding
 import com.example.thindie.astonrickandmorty.ui.basis.BaseFragment
 import com.example.thindie.astonrickandmorty.ui.basis.FOC
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.toUiEntity
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecycleViewed
-import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterFragment
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.ViewHolderIdSupplier
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
@@ -46,7 +47,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
             childPropertyEpisodesList =
                 requireNotNull(arguments) {
                     FOC(getString(R.string.error_fragment_havent_proper_arguments))
-                }.getStringArrayList( CHARACTERS)!!
+                }.getStringArrayList(CHARACTERS)!!
             isParent = false
         } catch (e: Exception) { /* ignore */
         }
@@ -61,6 +62,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
             when (state) {
                 is OutsourceLogic.UiState.SuccessFetchResult<*> -> {
                     state.hide(progress)
+                    W { "FETCHING OKAY" }
                     viewModel.adapter.submitList(state.list.map { it.toUiEntity() })
                 }
                 is OutsourceLogic.UiState.SuccessFetchResultConcrete<*> -> {
@@ -77,30 +79,46 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
             }
 
         }
-
     }
 
     override fun getHolderIdSupplier(): ViewHolderIdSupplier {
-
-            return ViewHolderIdSupplier(
+        return if (isParent)
+            ViewHolderIdSupplier(
                 viewHolderLayout = R.layout.item_grid_personages,
                 majorChild = R.id.item_grid_personages_name,
                 titleChild = R.id.item_grid_personages_status,
                 lesserChild = R.id.item_grid_personages_species,
                 expandedChild = R.id.item_grid_personages_gender,
-                imageChild = R.id.item_grid_personages_image
+                imageChild = R.id.item_grid_personages_image,
+                extraChild = null,
+                context = requireContext(),
+                isExtraContent = false,
+            )
+        else {
+            ViewHolderIdSupplier(
+                viewHolderLayout = R.layout.item_grid_personage_child_mode,
+                majorChild = R.id.item_grid_personages_name,
+                titleChild = R.id.item_grid_personages_status,
+                lesserChild = R.id.item_grid_personages_species,
+                expandedChild = R.id.item_grid_personages_gender,
+                imageChild = R.id.item_grid_personages_image,
+                extraChild = null,
+                context = requireContext(),
+                isExtraContent = false,
             )
         }
+    }
 
     override fun setRecyclerView() {
         _recyclerView =
             binding.recyclerViewGridParent.recyclerViewGrid
         viewModel.setAdapter(
-            RecyclerViewAdapterMediatorScroll(
+            RecyclerViewAdapterFragment(
                 viewHolderIdSupplier = getHolderIdSupplier(),
                 onClickedViewHolder = {
                     fragmentsRouter.router.navigate(PersonageConcreteFragment(it.id))
-                })
+                }, clazz = EpisodesFragment::class.java
+            )
         )
         _recyclerView.adapter = viewModel.adapter
 
@@ -127,7 +145,7 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
 
 
     override fun actAsAParentFragment() {
-
+        W { "Personage as a parent" }
         fragmentsRouter.router.dispatchBackPress()
         viewModel.onClickedNavigationButton()
         searchEngine.observeSearchCriteria()
@@ -137,6 +155,8 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
     }
 
     override fun actAsAChildFragment() {
+        W { "Personage as a child" }
+        viewModel.onConcreteScreenObtainList(childPropertyEpisodesList)
         setRecyclerView()
     }
 
@@ -170,6 +190,8 @@ class PersonagesFragment : BaseFragment(), UsesSearchAbleAdaptedRecycleViewAdapt
             isParent: Boolean = true,
             characterLinks: List<String>
         ): PersonagesFragment {
+
+            W { characterLinks.toString() }
             return PersonagesFragment().apply {
                 arguments = bundleOf(
                     IS_PARENT to isParent,

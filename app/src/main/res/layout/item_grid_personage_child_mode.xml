@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_grid_personages_child"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/item_grid_personages_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight=".9"
+        android:contentDescription="@string/item_personages_avatar" />
+
+    <TextView
+        android:id="@+id/item_grid_personages_name"
+        android:layout_width="match_parent"
+        android:layout_weight=".1"
+        android:visibility="visible"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/item_grid_personages_species"
+        android:layout_width="match_parent"
+        android:layout_weight=".05"
+        android:visibility="gone"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/item_grid_personages_status"
+        android:layout_width="match_parent"
+        android:layout_weight=".05"
+        android:visibility="gone"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/item_grid_personages_gender"
+        android:layout_width="match_parent"
+        android:layout_weight=".1"
+        android:visibility="gone"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

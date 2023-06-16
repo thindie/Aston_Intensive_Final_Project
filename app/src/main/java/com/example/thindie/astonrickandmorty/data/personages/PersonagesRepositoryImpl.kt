@@ -10,6 +10,7 @@ import com.example.thindie.astonrickandmorty.data.personagesDtoToDomain
 import com.example.thindie.astonrickandmorty.data.personagesResponseToDomain
 import com.example.thindie.astonrickandmorty.data.remotesource.PersonagesApi
 import com.example.thindie.astonrickandmorty.data.remotesource.entity.personage.PersonageDto
+import com.example.thindie.astonrickandmorty.data.remotesource.util.commaQueryEncodedBuilder
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageDomain
 import com.example.thindie.astonrickandmorty.domain.personages.PersonageRepository
 import javax.inject.Inject
@@ -48,8 +49,8 @@ class PersonagesRepositoryImpl @Inject constructor(
             .runCatching {
                 val link = concretes
                     .map { link -> link.substringAfterLast("/") }
-                    .joinToString { "," }
-                api.getMultiCharacter(link)
+                api.getMultiCharacter(commaQueryEncodedBuilder(link))
+
             }
             .mapCatching { list ->
                 list.map(personagesDtoToDomain)

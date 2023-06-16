@@ -15,6 +15,8 @@ data class EpisodesUiModel(
     val pool: UiLinkPool
 ) : SearchAble {
 
+    private var extra: MinorComponent? = null
+
 
     override fun <T : SearchAble> getReified(): T {
         return this  as T
@@ -30,6 +32,10 @@ data class EpisodesUiModel(
 
     override fun getMajorComponent2(): String {
         return airDate
+    }
+
+    override fun getExtraComponent(): List<String> {
+        return characters
     }
 
     override fun getMinorComponent(): MinorComponent {

@@ -2,6 +2,7 @@ package com.example.thindie.astonrickandmorty.ui.uiutils
 
 import android.graphics.Bitmap
 import android.widget.ImageView
+import androidx.annotation.IdRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.example.thindie.astonrickandmorty.ui.uiutils.searchBar.SearchEngine
@@ -34,6 +35,8 @@ interface SearchAble {
     fun getMajorComponent(): String
     fun getMajorComponent1(): String
     fun getMajorComponent2(): String
+
+    fun getExtraComponent(): List<String>
 
     fun getMinorComponent(): MinorComponent
     fun getMinorComponent1(): MinorComponent

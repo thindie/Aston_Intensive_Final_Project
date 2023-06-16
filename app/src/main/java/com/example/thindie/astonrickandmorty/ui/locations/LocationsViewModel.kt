@@ -11,12 +11,14 @@ import com.example.thindie.astonrickandmorty.domain.locations.LocationProvider
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapLocationDomain
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterFragment
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
+import com.example.thindie.astonrickandmorty.ui.personage.PersonagesFragment
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 
 class LocationsViewModel @Inject constructor(private val provider: LocationProvider) : ViewModel(),
     SearchEngineResultConsumer, OutSourced<LocationDomain, LocationsFilter>,
-    RecyclerViewAdapterManager<LocationsUiModel, UiHolder, Scroll> {
+    RecyclerViewAdapterManager<LocationsUiModel, UiHolder, PersonagesFragment, Scroll> {
 
     private lateinit var outSource: OutsourceLogic<LocationDomain, LocationsFilter>
 
@@ -100,6 +102,8 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
     override val adapter: RecyclerViewAdapterMediatorScroll<LocationsUiModel, UiHolder>
         get() = _adapter
 
+
+
     override fun observe(eventStateListener: EventMediator<Scroll>) {
         eventStateListener
             .event = { scrollEvent ->
@@ -117,10 +121,12 @@ class LocationsViewModel @Inject constructor(private val provider: LocationProvi
     }
 
 
-    override fun <Adapter : RecyclerViewAdapter<LocationsUiModel, UiHolder>> setAdapter(adapter: Adapter) {
+    override fun <Adapter : RecyclerViewAdapterFragment<LocationsUiModel, UiHolder, PersonagesFragment>> setAdapter(
+        adapter: Adapter
+    ) {
         if (!this::_adapter.isInitialized) {
 
-            _adapter = adapter as RecyclerViewAdapterMediatorScroll<LocationsUiModel, UiHolder>
+            _adapter = adapter
         }
     }
 }

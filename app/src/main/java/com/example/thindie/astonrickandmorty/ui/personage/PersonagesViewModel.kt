@@ -10,12 +10,14 @@ import com.example.thindie.astonrickandmorty.domain.personages.PersonageProvider
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapPersonageDomain
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterFragment
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
+import com.example.thindie.astonrickandmorty.ui.episodes.EpisodesFragment
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 
 class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvider) : ViewModel(),
     SearchEngineResultConsumer, OutSourced<PersonageDomain, PersonageFilter>,
-    RecyclerViewAdapterManager<PersonagesUiModel, UiHolder, Scroll> {
+    RecyclerViewAdapterManager<PersonagesUiModel, UiHolder, EpisodesFragment, Scroll> {
 
     private lateinit var outSource: OutsourceLogic<PersonageDomain, PersonageFilter>
 
@@ -126,10 +128,12 @@ class PersonagesViewModel @Inject constructor(personageProvider: PersonageProvid
 
     }
 
-    override fun <Adapter : RecyclerViewAdapter<PersonagesUiModel, UiHolder>> setAdapter(adapter: Adapter) {
+    override fun <Adapter : RecyclerViewAdapterFragment<PersonagesUiModel, UiHolder, EpisodesFragment>> setAdapter(
+        adapter: Adapter
+    ) {
         if (!this::_adapter.isInitialized) {
 
-            _adapter = adapter as RecyclerViewAdapterMediatorScroll<PersonagesUiModel, UiHolder>
+            _adapter = adapter
         }
     }
 }

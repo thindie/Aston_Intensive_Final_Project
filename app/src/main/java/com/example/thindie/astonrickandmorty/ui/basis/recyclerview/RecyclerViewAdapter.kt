@@ -44,6 +44,7 @@ constructor(
                 viewHolderIdSupplier.expandedChild
             )
         }
+
         holder.itemView.setOnClickListener{
             onClickedViewHolder(item)
         }

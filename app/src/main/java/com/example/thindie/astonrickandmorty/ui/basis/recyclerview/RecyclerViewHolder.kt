@@ -1,8 +1,12 @@
 package com.example.thindie.astonrickandmorty.ui.basis.recyclerview
 
+import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
+import androidx.fragment.app.FragmentContainerView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.thindie.astonrickandmorty.ui.uiutils.widGet
 
@@ -21,6 +25,10 @@ class UiHolder(private val view: View) : RecyclerView.ViewHolder(view),
         return view.widGet(id)
     }
 
+    override fun getFragmentContainer(@IdRes id: Int, context: Context): FragmentContainerView? {
+        return  view.widGet(id)
+    }
+
     override fun getExpandedBody(id: Int, isExpanded: Boolean): TextView? {
         return if (isExpanded) view.widGet(id)
         else null
@@ -30,5 +38,5 @@ class UiHolder(private val view: View) : RecyclerView.ViewHolder(view),
         return if (isHasImage) view.widGet(id)
         else null
     }
- }
+}
 

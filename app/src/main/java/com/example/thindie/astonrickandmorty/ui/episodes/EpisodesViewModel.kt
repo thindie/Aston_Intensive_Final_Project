@@ -10,12 +10,14 @@ import com.example.thindie.astonrickandmorty.domain.filtering.Filter
 import com.example.thindie.astonrickandmorty.ui.basis.mappers.mapEpisodesDomain
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.EventMediator
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapter
+import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterFragment
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterManager
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.RecyclerViewAdapterMediatorScroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.Scroll
 import com.example.thindie.astonrickandmorty.ui.basis.recyclerview.UiHolder
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutSourced
 import com.example.thindie.astonrickandmorty.ui.basis.uiApi.OutsourceLogic
+import com.example.thindie.astonrickandmorty.ui.personage.PersonagesFragment
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchAble
 import com.example.thindie.astonrickandmorty.ui.uiutils.SearchEngineResultConsumer
 import javax.inject.Inject
@@ -24,11 +26,11 @@ import kotlinx.coroutines.launch
 class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewModel(),
     SearchEngineResultConsumer,
     OutSourced<EpisodeDomain, EpisodeFilter>,
-    RecyclerViewAdapterManager<EpisodesUiModel, UiHolder, Scroll> {
+    RecyclerViewAdapterManager<EpisodesUiModel, UiHolder, PersonagesFragment, Scroll,> {
 
-    override val adapter: RecyclerViewAdapterMediatorScroll<EpisodesUiModel, UiHolder>
+    override val adapter: RecyclerViewAdapterFragment<EpisodesUiModel, UiHolder, PersonagesFragment>
         get() = _adapterHolder
-    private lateinit var _adapterHolder: RecyclerViewAdapterMediatorScroll<EpisodesUiModel, UiHolder>
+    private lateinit var _adapterHolder: RecyclerViewAdapterFragment<EpisodesUiModel, UiHolder, PersonagesFragment>
     private lateinit var outSource: OutsourceLogic<EpisodeDomain, EpisodeFilter>
 
     init {
@@ -97,9 +99,9 @@ class EpisodesViewModel @Inject constructor(provider: EpisodeProvider) : ViewMod
     }
 
 
-    override fun <Adapter : RecyclerViewAdapter<EpisodesUiModel, UiHolder>> setAdapter(adapter: Adapter) {
+    override fun <Adapter : RecyclerViewAdapterFragment<EpisodesUiModel, UiHolder, PersonagesFragment>> setAdapter(adapter: Adapter) {
         if (!this::_adapterHolder.isInitialized) {
-            _adapterHolder =  adapter as RecyclerViewAdapterMediatorScroll<EpisodesUiModel, UiHolder>
+            _adapterHolder =  adapter
         }
     }
 
